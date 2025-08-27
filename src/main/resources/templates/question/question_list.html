@@ -1,0 +1,7 @@
+<title>질문 목록</title>
+<!-- 검색 폼 -->
+<form th:action="@{/question/list}" method="get" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="kw" th:value="${kw}" class="form-control" placeholder="제목, 내용, 작성자, 답변, 답변 작성자로 검색"/>
+        <button type="submit" class="btn btn-primary">검색</button>
+    </div></form>
