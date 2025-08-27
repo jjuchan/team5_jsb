@@ -20,4 +20,12 @@ public class QuestionService {
         }
         return questionRepository.findAll();
     }
+
+    @Transactional
+    public Question getQuestion(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Question not found"));
+        question.increaseViewCount();
+        return question;
+    }
 }

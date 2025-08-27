@@ -23,6 +23,9 @@ public class Question extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(columnDefinition = "integer default 0")
+    private Integer viewCount = 0;
+
     @ManyToOne
     private User author;
 
@@ -33,5 +36,9 @@ public class Question extends BaseEntity {
         this.subject = subject;
         this.content = content;
         this.author = author;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount = (this.viewCount == null) ? 1 : this.viewCount + 1;
     }
 }
