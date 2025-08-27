@@ -24,7 +24,7 @@ public class Question extends BaseEntity {
     @ManyToOne
     private User author;
 
-    @OneToMany
-    private List<Answer> answers;
+     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<Answer> answerList = new ArrayList<>();
     **/
 }

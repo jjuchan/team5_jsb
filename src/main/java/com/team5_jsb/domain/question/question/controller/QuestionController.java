@@ -1,11 +1,15 @@
 package com.team5_jsb.domain.question.question.controller;
 
+import com.team5_jsb.domain.question.question.dto.QuestionForm;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.service.QuestionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -23,5 +27,19 @@ public class QuestionController {
         model.addAttribute("questionList", questionList);
 
         return "question_list";
+    }
+
+    @GetMapping("/create")
+    public String create(QuestionForm questionForm) {
+        return "question_form";
+    }
+
+    @PostMapping("/create")
+    public String createQuestion(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "question_form";
+        }
+        questionService.create(questionForm.getSubject(), questionForm.getContent());
+        return "redirect:/question/list";
     }
 }

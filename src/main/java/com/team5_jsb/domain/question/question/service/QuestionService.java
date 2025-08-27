@@ -16,4 +16,12 @@ public class QuestionService {
 
         return questionRepository.findAll();
     }
+
+    public void create(String subject, String content) {
+        Question question = new Question();
+        question.setSubject(subject);
+        question.setContent(content);
+        questionRepository.save(question);
+        System.out.println("question = " + question);
+    }
 }
