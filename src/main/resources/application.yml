@@ -1,1 +1,8 @@
-spring.application.name=team5_jsb
+spring:
+  profiles:
+    active: dev
+  application:
+    name: team5_jsb
+  output:
+    ansi:
+      enabled: always
