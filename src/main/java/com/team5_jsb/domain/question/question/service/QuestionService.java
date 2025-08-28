@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +24,14 @@ public class QuestionService {
         question.setContent(content);
         questionRepository.save(question);
         System.out.println("question = " + question);
+    }
+
+    public Question getQuestion(Long id) {
+        Optional<Question> question = questionRepository.findById(id);
+        if (question.isPresent()) {
+            return question.get();
+        } else {
+            throw new RuntimeException("question not found");
+        }
     }
 }
