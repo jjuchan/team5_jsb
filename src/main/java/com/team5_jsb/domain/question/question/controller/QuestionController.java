@@ -23,22 +23,26 @@ public class QuestionController {
     private final AnswerService answerService;
 
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(value = "kw", defaultValue = "") String kw) {
-        List<Question> questionList = this.questionService.getList(kw);
-        model.addAttribute("questionList", questionList);
+    public String list(Model model,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "kw", defaultValue = "") String kw) {
+        Page<Question> paging = this.questionService.getList(page, kw);
+        model.addAttribute("paging", paging);
+        model.addAttribute("kw", kw);
         return "question/question_list";
     }
 
     @GetMapping("/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Long id) {
+    public String detail(Model model, @PathVariable("id") Long id,
+                         @RequestParam(value = "page", defaultValue = "0") int page) {
         // 질문 조회 및 조회수 증가
         Question question = this.questionService.getQuestion(id);
-        
-        // 답변 목록 조회 (페이징 없이 전체 조회)
-        List<Answer> answerList = this.answerService.getAnswers(question);
-        
+
+        // 답변 목록 페이징 처리
+        Page<Answer> answerPaging = this.answerService.getAnswers(question, page);
+
         model.addAttribute("question", question);
-        model.addAttribute("answerList", answerList);
+        model.addAttribute("answerPaging", answerPaging);
         return "question/question_detail";
     }
 }
