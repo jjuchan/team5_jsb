@@ -28,7 +28,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         HttpSecurity httpSecurity = http
-            // CSRF(Cross-Site Request Forgery) 공격 방지 비활성화 (개발 편의상)
+            // H2 Console: CSRF 토큰 미지원으로 비활성화
             .csrf(csrf -> csrf.disable())
             
             // HTTP 요청에 대한 접근 권한 설정
