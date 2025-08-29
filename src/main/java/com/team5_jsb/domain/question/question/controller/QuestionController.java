@@ -1,6 +1,6 @@
 package com.team5_jsb.domain.question.question.controller;
 
-import com.team5_jsb.domain.question.question.dto.QuestionForm;
+import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.service.QuestionService;
 import jakarta.validation.Valid;
@@ -31,16 +31,16 @@ public class QuestionController {
     }
 
     @GetMapping("/create")
-    public String create(QuestionForm questionForm) {
+    public String create(QuestionCreateDTO questionCreateDTO) {
         return "question_form";
     }
 
     @PostMapping("/create")
-    public String createQuestion(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+    public String createQuestion(@Valid QuestionCreateDTO questionCreateDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "question_form";
         }
-        questionService.create(questionForm.getSubject(), questionForm.getContent());
+        questionService.create(questionCreateDTO);
         return "redirect:/question/list";
     }
 
