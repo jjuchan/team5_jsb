@@ -1,6 +1,7 @@
 package com.team5_jsb.domain.question.question.controller;
 
 import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
+import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.service.QuestionService;
 import jakarta.validation.Valid;
@@ -50,5 +51,29 @@ public class QuestionController {
         Question question = questionService.getQuestion(id);
         model.addAttribute("question", question);
         return "question_detail";
+    }
+
+    @GetMapping("/modify/{id}")
+    public String modifyForm(@PathVariable Long id, Model model) {
+        Question question = questionService.getQuestion(id);
+
+        QuestionUpdateDto dto = new QuestionUpdateDto();
+        dto.setSubject(question.getSubject());
+        dto.setContent(question.getContent());
+
+        model.addAttribute("questionUpdateDto", dto);
+        model.addAttribute("questionId", id);
+        return "question_modify_form";
+    }
+
+
+    @PostMapping("/modify/{id}")
+    public String questionModify(@Valid QuestionUpdateDto questionUpdateDto, BindingResult bindingResult, @PathVariable("id") Long id) {
+        if (bindingResult.hasErrors()) {
+            return "question_modify_form";
+        }
+        questionService.modify(questionUpdateDto, id);
+        return "redirect:/question/detail/" + id;
+
     }
 }

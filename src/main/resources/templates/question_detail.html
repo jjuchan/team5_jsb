@@ -14,7 +14,11 @@
             </div>
         </div>
     </div>
-
-    <a href="/question/list" class="btn btn-primary my-2">목록으로 돌아가기</a>
+    <div class="my-3 d-flex justify-content-between">
+        <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-primary my-2">
+            <span th:text="수정하기"></span>
+        </a>
+        <a href="/question/list" class="btn btn-primary my-2">목록으로 돌아가기</a>
+    </div>
 </div>
 </html>

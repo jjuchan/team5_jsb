@@ -37,5 +37,6 @@ out/
 .vscode/
 
 
-### db ###
-db_dev.mv.db
+# H2 Database files
+*.mv.db
+*.trace.db
