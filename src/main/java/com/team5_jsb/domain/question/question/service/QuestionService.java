@@ -54,4 +54,15 @@ public class QuestionService {
 
         questionRepository.save(question);
     }
+
+    @Transactional
+    public void deleteQuestion(Long id) {
+        Optional<Question> optionalQuestion = questionRepository.findById(id);
+        if (optionalQuestion.isPresent()) {
+            questionRepository.deleteById(id);
+        } else {
+            // 해당 ID의 질문이 없을 경우 처리
+            throw new IllegalArgumentException("해당 ID의 질문을 찾을 수 없습니다.");
+        }
+    }
 }

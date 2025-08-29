@@ -1,11 +1,15 @@
 package com.team5_jsb.domain.question.question.entity;
 
+import com.team5_jsb.domain.answer.answer.entity.Answer;
+import com.team5_jsb.domain.user.user.entity.User;
 import com.team5_jsb.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,11 +24,10 @@ public class Question extends BaseEntity {
 
     private int viewCount;
 
-    /** 추후 통합 때 추가 예정
     @ManyToOne
     private User author;
 
-     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Answer> answerList = new ArrayList<>();
-    **/
+
 }
