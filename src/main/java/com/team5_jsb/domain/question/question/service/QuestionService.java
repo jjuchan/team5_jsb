@@ -1,24 +1,34 @@
 package com.team5_jsb.domain.question.question.service;
 
+
 import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    private final int PAGE_SIZE = 10;
 
-    public List<Question> getList() {
+    @Transactional(readOnly = true)
+    public Page<Question> getList(int page, String kw) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createDate"));
 
-        return questionRepository.findAll();
+        if (kw != null && !kw.isBlank()) {
+            return questionRepository.findAllByKeywordOrderByCreateDateDesc(kw, pageable);
+        }
+        return questionRepository.findAll(pageable);
     }
 
     public void create(QuestionCreateDTO questionCreateDTO) {
@@ -30,15 +40,14 @@ public class QuestionService {
         System.out.println("question = " + questionCreateDTO);
     }
 
+    @Transactional
     public Question getQuestion(Long id) {
-        Optional<Question> question = questionRepository.findById(id);
-        if (question.isPresent()) {
-            return question.get();
-        } else {
-            throw new RuntimeException("question not found");
-        }
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Question not found"));
+        question.increaseViewCount();
+        return question;
     }
-
+    
     @Transactional
     public void modify(QuestionUpdateDto dto, Long id) {
         Question question = questionRepository.findById(id)
