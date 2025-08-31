@@ -29,14 +29,8 @@ public class Question extends BaseEntity {
     @ManyToOne
     private User author;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Answer> answerList = new ArrayList<>();
-
-    public Question(String subject, String content, User author) {
-        this.subject = subject;
-        this.content = content;
-        this.author = author;
-    }
 
     public void increaseViewCount() {
         this.viewCount = (this.viewCount == null) ? 1 : this.viewCount + 1;

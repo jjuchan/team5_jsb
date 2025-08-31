@@ -22,10 +22,4 @@ public class Answer extends BaseEntity {
 
     @ManyToOne
     private User author;
-
-    public Answer(String content, Question question, User author) {
-        this.content = content;
-        this.question = question;
-        this.author = author;
-    }
 }
