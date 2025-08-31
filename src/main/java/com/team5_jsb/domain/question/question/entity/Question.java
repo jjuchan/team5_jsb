@@ -14,5 +14,5 @@ public class Question extends BaseEntity {
 
     private String content;
 
-    private int viewCount;
+//    private int viewCount;
 }
