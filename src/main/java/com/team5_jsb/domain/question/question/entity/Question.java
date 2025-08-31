@@ -12,17 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 public class Question extends BaseEntity {
 
+    @Column(length = 200)
     private String subject;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private int viewCount;
+    @Column(columnDefinition = "integer default 0")
+    private Integer viewCount = 0;
 
     @ManyToOne
     private User author;
@@ -30,4 +32,7 @@ public class Question extends BaseEntity {
     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Answer> answerList = new ArrayList<>();
 
+    public void increaseViewCount() {
+        this.viewCount = (this.viewCount == null) ? 1 : this.viewCount + 1;
+    }
 }
