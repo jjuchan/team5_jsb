@@ -28,6 +28,8 @@ public class AnswerService {
     }
 
     public void update(Answer answer, String content) {
+        answerRepository.findById(answer.getId()).orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
+
         answer.setContent(content);
         answer.setModifyDate(LocalDateTime.now());
         answerRepository.save(answer);
