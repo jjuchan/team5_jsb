@@ -17,7 +17,7 @@ public class AnswerService {
 
     public void create(Question question, String content) {
         Answer answer = new Answer();
-        answer.setCreateDate(LocalDateTime.now());
+        answer.setCreateDateTime(LocalDateTime.now());
         answer.setContent(content);
         answer.setQuestion(question);
         answerRepository.save(answer);
@@ -31,7 +31,7 @@ public class AnswerService {
         answerRepository.findById(answer.getId()).orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
 
         answer.setContent(content);
-        answer.setModifyDate(LocalDateTime.now());
+        answer.setModifyDateTime(LocalDateTime.now());
         answerRepository.save(answer);
     }
 

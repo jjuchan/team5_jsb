@@ -1,5 +1,6 @@
 package com.team5_jsb.domain.question.question.controller;
 
+import com.team5_jsb.domain.answer.answer.dto.AnswerCreateDto;
 import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.entity.Question;
@@ -47,7 +48,7 @@ public class QuestionController {
 
 
     @GetMapping("/detail/{id}")
-    public String detail(@PathVariable("id") Long id, Model model) {
+    public String detail(@PathVariable("id") Long id, Model model, AnswerCreateDto answerDto) {
         Question question = questionService.getQuestion(id);
         model.addAttribute("question", question);
         return "question_detail";
