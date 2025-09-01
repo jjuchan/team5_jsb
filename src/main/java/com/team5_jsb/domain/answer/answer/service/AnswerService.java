@@ -27,6 +27,10 @@ public class AnswerService {
         answerRepository.deleteById(id);
     }
 
+    public void delete(Answer answer) {
+        answerRepository.delete(answer);
+    }
+
     public void update(Answer answer, String content) {
         answerRepository.findById(answer.getId()).orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
 

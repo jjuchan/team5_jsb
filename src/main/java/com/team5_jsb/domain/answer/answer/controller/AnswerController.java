@@ -1,6 +1,7 @@
 package com.team5_jsb.domain.answer.answer.controller;
 
 import com.team5_jsb.domain.answer.answer.dto.AnswerCreateDto;
+import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.answer.answer.service.AnswerService;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.service.QuestionService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,4 +36,12 @@ public class AnswerController {
         answerService.create(question, answerCreateDto.getContent());
         return String.format("redirect:/question/detail/%s", id);
     }
+
+    @GetMapping("/delete/{id}")
+    public String answerDelete(@PathVariable("id") long id) {
+        Answer answer = answerService.getAnswer(id);
+        answerService.delete(answer);
+        return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+    }
+
 }

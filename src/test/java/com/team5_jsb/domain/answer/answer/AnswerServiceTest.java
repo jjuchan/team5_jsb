@@ -37,7 +37,7 @@ public class AnswerServiceTest {
         Question question = new Question();
         question.setSubject("질문 제목1");
         question.setContent("질문 내용1");
-        question.setCreateDate(LocalDateTime.now());
+        question.setCreateDateTime(LocalDateTime.now());
 
         answerService.create(question, "답변 내용 1");
         Answer answer = answerService.getAnswer(3);
