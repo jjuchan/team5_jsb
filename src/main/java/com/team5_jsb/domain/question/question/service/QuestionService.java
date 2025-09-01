@@ -1,6 +1,7 @@
 package com.team5_jsb.domain.question.question.service;
 
 import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
+import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.repository.QuestionRepository;
@@ -21,13 +22,17 @@ public class QuestionService {
     private final int PAGE_SIZE = 10;
 
     @Transactional(readOnly = true)
-    public Page<Question> getList(int page, String kw) {
+    public Page<QuestionResponseDTO> getList(int page, String kw) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createDate"));
 
+        Page<Question> pageResult;
         if (kw != null && !kw.isBlank()) {
-            return questionRepository.findAllByKeywordOrderByCreateDateDesc(kw, pageable);
+            pageResult = questionRepository.findAllByKeywordOrderByCreateDateDesc(kw, pageable);
+        } else {
+            pageResult = questionRepository.findAll(pageable);
         }
-        return questionRepository.findAll(pageable);
+
+        return pageResult.map(QuestionResponseDTO::fromEntity);
     }
 
     public void create(QuestionCreateDTO questionCreateDTO) {
@@ -40,11 +45,16 @@ public class QuestionService {
     }
 
     @Transactional
-    public Question getQuestion(Long id) {
-        Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
-        question.increaseViewCount();
-        return question;
+    public QuestionResponseDTO getQuestion(Long id) {
+        return questionRepository.findById(id)
+                .map(QuestionResponseDTO::fromEntity)
+                .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public Question getQuestionEntity(Long id) {
+        return questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다."));
     }
     
     @Transactional

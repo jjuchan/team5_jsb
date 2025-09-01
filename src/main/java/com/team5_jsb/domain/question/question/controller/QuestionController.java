@@ -3,6 +3,7 @@ package com.team5_jsb.domain.question.question.controller;
 import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.answer.answer.service.AnswerService;
 import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
+import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.service.QuestionService;
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class QuestionController {
     public String list(Model model,
                        @RequestParam(value = "page", defaultValue = "0") int page,
                        @RequestParam(value = "kw", defaultValue = "") String kw) {
-        Page<Question> paging = this.questionService.getList(page, kw);
+        Page<QuestionResponseDTO> paging = this.questionService.getList(page, kw);
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
         return "question_list";
@@ -48,11 +49,12 @@ public class QuestionController {
     @GetMapping("/detail/{id}")
     public String detail(Model model, @PathVariable("id") Long id,
                          @RequestParam(value = "page", defaultValue = "0") int page) {
-        // 질문 조회 및 조회수 증가
-        Question question = this.questionService.getQuestion(id);
+        // 질문 DTO (뷰 렌더링용)
+        QuestionResponseDTO question = this.questionService.getQuestion(id);
 
-        // 답변 목록 페이징 처리
-        Page<Answer> answerPaging = this.answerService.getAnswers(question, page);
+        // 답변 페이징은 엔티티 필요
+        Question questionEntity = this.questionService.getQuestionEntity(id);
+        Page<Answer> answerPaging = this.answerService.getAnswers(questionEntity, page);
 
         model.addAttribute("question", question);
         model.addAttribute("answerPaging", answerPaging);
@@ -61,7 +63,7 @@ public class QuestionController {
       
     @GetMapping("/modify/{id}")
     public String modifyForm(@PathVariable Long id, Model model) {
-        Question question = questionService.getQuestion(id);
+        QuestionResponseDTO question = questionService.getQuestion(id);
 
         QuestionUpdateDto dto = new QuestionUpdateDto();
         dto.setSubject(question.getSubject());

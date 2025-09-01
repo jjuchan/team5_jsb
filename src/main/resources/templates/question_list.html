@@ -47,7 +47,7 @@
                 <td>
                     <a th:href="@{/question/detail/{id}(id=${question.id})}" th:text="${question.subject}" class="text-decoration-none"></a>
                 </td>
-                <td th:text="${question.author != null ? question.author.username : '알 수 없음'}"></td>
+                <td th:text="${question.authorUsername != null ? question.authorUsername : '알 수 없음'}"></td>
                 <td th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></td>
                 <td th:text="${question.viewCount}"></td>
             </tr>
@@ -62,7 +62,7 @@
             <ul class="pagination justify-content-center">
                 <!-- 첫 페이지 -->
                 <li class="page-item" th:classappend="${paging.first} ? 'disabled'">
-                    <a th:if="!${paging.first}" class="page-link" th:href="@{/question/list(page=0, kw=${param.kw})}" aria-label="First">
+                    <a th:if="${!paging.first}" class="page-link" th:href="@{/question/list(page=0, kw=${param.kw})}" aria-label="First">
                         <span aria-hidden="true">««</span>
                     </a>
                     <span th:if="${paging.first}" class="page-link" aria-hidden="true">««</span>
@@ -70,7 +70,7 @@
 
                 <!-- 이전 페이지 -->
                 <li class="page-item" th:classappend="${paging.first} ? 'disabled'">
-                    <a th:if="!${paging.first}" class="page-link" th:href="@{/question/list(page=${paging.number - 1}, kw=${param.kw})}" aria-label="Previous">
+                    <a th:if="${!paging.first}" class="page-link" th:href="@{/question/list(page=${paging.number - 1}, kw=${param.kw})}" aria-label="Previous">
                         <span aria-hidden="true">«</span>
                     </a>
                     <span th:if="${paging.first}" class="page-link" aria-hidden="true">«</span>
@@ -87,7 +87,7 @@
 
                 <!-- 다음 페이지 -->
                 <li class="page-item" th:classappend="${paging.last} ? 'disabled'">
-                    <a th:if="!${paging.last}" class="page-link" th:href="@{/question/list(page=${paging.number + 1}, kw=${param.kw})}" aria-label="Next">
+                    <a th:if="${!paging.last}" class="page-link" th:href="@{/question/list(page=${paging.number + 1}, kw=${param.kw})}" aria-label="Next">
                         <span aria-hidden="true">»</span>
                     </a>
                     <span th:if="${paging.last}" class="page-link" aria-hidden="true">»</span>
@@ -95,7 +95,7 @@
 
                 <!-- 마지막 페이지 -->
                 <li class="page-item" th:classappend="${paging.last} ? 'disabled'">
-                    <a th:if="!${paging.last}" class="page-link" th:href="@{/question/list(page=${paging.totalPages - 1}, kw=${param.kw})}" aria-label="Last">
+                    <a th:if="${!paging.last}" class="page-link" th:href="@{/question/list(page=${paging.totalPages - 1}, kw=${param.kw})}" aria-label="Last">
                         <span aria-hidden="true">»»</span>
                     </a>
                     <span th:if="${paging.last}" class="page-link" aria-hidden="true">»»</span>
