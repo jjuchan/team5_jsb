@@ -1,6 +1,7 @@
 package com.team5_jsb.domain.answer.answer.controller;
 
 import com.team5_jsb.domain.answer.answer.dto.AnswerCreateDto;
+import com.team5_jsb.domain.answer.answer.dto.AnswerUpdateDto;
 import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.answer.answer.service.AnswerService;
 import com.team5_jsb.domain.question.question.entity.Question;
@@ -41,6 +42,24 @@ public class AnswerController {
     public String answerDelete(@PathVariable("id") long id) {
         Answer answer = answerService.getAnswer(id);
         answerService.delete(answer);
+        return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+    }
+
+    @GetMapping("/modify/{id}")
+    public String answerModify(@PathVariable("id") long id, Model model) {
+        Answer answer = answerService.getAnswer(id);
+        AnswerUpdateDto answerUpdateDto = new AnswerUpdateDto();
+        answerUpdateDto.setContent(answer.getContent());
+        model.addAttribute("answerUpdateDto", answerUpdateDto);
+        model.addAttribute("id", id);
+        return "answer_form";
+    }
+
+    @PostMapping("/modify/{id}")
+    public String answerModify(@Valid AnswerUpdateDto answerUpdateDto, BindingResult bindingResult,
+                               @PathVariable("id") long id) {
+        Answer answer = answerService.getAnswer(id);
+        answerService.update(answer, answerUpdateDto.getContent());
         return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
     }
 

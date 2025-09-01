@@ -53,7 +53,7 @@ public class AnswerServiceTest {
         assertThat(answer).isNotNull();
 
         //when
-        answerService.deleteById(answer.getId());
+        answerService.delete(answer);
 
         //then
         List<Answer> answerList = answerService.findAll();

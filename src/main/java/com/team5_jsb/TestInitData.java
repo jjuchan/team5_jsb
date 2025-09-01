@@ -1,6 +1,7 @@
 package com.team5_jsb;
 
 
+import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.answer.answer.repository.AnswerRepository;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.repository.QuestionRepository;
@@ -47,18 +48,17 @@ public class TestInitData {
         q2.setCreateDateTime(LocalDateTime.now());
         this.questionRepository.save(q2);  // 두번째 질문 저장
 
-//        Answer answer1 = new Answer();
-//        answer1.setCreateDateTime(LocalDateTime.now());
-//        answer1.setContent("댓글 1");
-//        answer1.setQuestion(q1);
-//        answerRepository.save(answer1);
-//        q1.setAnswerList();
-//
-//        Answer answer2 = new Answer();
-//        answer2.setCreateDateTime(LocalDateTime.now());
-//        answer2.setContent("댓글 2");
-//        answer2.setQuestion(q2);
-//        answerRepository.save(answer2);
+        Answer answer1 = new Answer();
+        answer1.setCreateDateTime(LocalDateTime.now());
+        answer1.setContent("댓글 1");
+        answer1.setQuestion(q1);
+        answerRepository.save(answer1);
+
+        Answer answer2 = new Answer();
+        answer2.setCreateDateTime(LocalDateTime.now());
+        answer2.setContent("댓글 2");
+        answer2.setQuestion(q2);
+        answerRepository.save(answer2);
 
     }
 }

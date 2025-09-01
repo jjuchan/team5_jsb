@@ -23,10 +23,6 @@ public class AnswerService {
         answerRepository.save(answer);
     }
 
-    public void deleteById(long id) {
-        answerRepository.deleteById(id);
-    }
-
     public void delete(Answer answer) {
         answerRepository.delete(answer);
     }
