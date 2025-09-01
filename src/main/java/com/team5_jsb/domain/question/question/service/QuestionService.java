@@ -1,6 +1,7 @@
 package com.team5_jsb.domain.question.question.service;
 
 import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
+import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.repository.QuestionRepository;
@@ -16,9 +17,10 @@ import java.util.Optional;
 public class QuestionService {
     private final QuestionRepository questionRepository;
 
-    public List<Question> getList() {
-
-        return questionRepository.findAll();
+    public List<QuestionResponseDTO> getList() {
+        return questionRepository.findAll().stream()
+                .map(q -> new QuestionResponseDTO(q.getId(), q.getSubject(), q.getContent(), q.getCreateDateTime()))
+                .toList();
     }
 
     public void create(QuestionCreateDTO questionCreateDTO) {
@@ -30,13 +32,15 @@ public class QuestionService {
         System.out.println("question = " + questionCreateDTO);
     }
 
-    public Question getQuestion(Long id) {
-        Optional<Question> question = questionRepository.findById(id);
-        if (question.isPresent()) {
-            return question.get();
-        } else {
-            throw new RuntimeException("question not found");
-        }
+    public QuestionResponseDTO getQuestion(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("question not found"));
+        return new QuestionResponseDTO(
+                question.getId(),
+                question.getSubject(),
+                question.getContent(),
+                question.getCreateDateTime()
+        );
     }
 
     @Transactional
@@ -44,7 +48,6 @@ public class QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다."));
 
-        // DTO에서 값 가져와 기존 엔티티 수정
         if (dto.getSubject() != null) {
             question.setSubject(dto.getSubject());
         }

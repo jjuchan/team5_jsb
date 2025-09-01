@@ -1,6 +1,10 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
+<head>
+    <title>질문 리스트</title>
+</head>
+<body>
 <div layout:fragment="content" class="container my-3">
     <table class="table">
         <thead class="table-dark">
@@ -14,10 +18,11 @@
             <td>
                 <a th:href="@{|/question/detail/${question.id}|}" th:text="${question.subject}"></a>
             </td>
-            <td th:text="${question.createDateTime}"></td>
+            <td th:text="${#temporals.format(question.createDateTime, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         </tbody>
     </table>
     <a th:href="@{/question/create}" class="btn btn-primary">질문 등록하기</a>
 </div>
+</body>
 </html>
