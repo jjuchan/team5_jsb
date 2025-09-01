@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Team5 JSB - 메인</title>
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    <h1>Welcome to Team5 JSB!</h1>
+    
+    <!-- 로그인한 사용자 정보 표시 -->
+    <div th:if="${user}">
+        <h2>환영합니다!</h2>
+        <div style="border: 1px solid #ddd; padding: 10px; margin: 10px 0;">
+            <p><strong>사용자명:</strong> <span th:text="${user.username}"></span></p>
+            <p><strong>이메일:</strong> <span th:text="${user.email}"></span></p>
+            <p><strong>가입일:</strong> <span th:text="${#temporals.format(user.createdDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+        </div>
+    </div>
+
+    <!-- Spring Security 태그 사용 -->
+    <hr style="margin: 30px 0;">
+    
+    <div sec:authorize="isAuthenticated()">
+        <h3>인증 정보</h3>
+        <p>현재 로그인 사용자: <span sec:authentication="name"></span></p>
+        <p>권한: <span sec:authentication="authorities"></span></p>
+    </div>
+    
+    <div sec:authorize="isAnonymous()">
+        <h3>Guest</h3>
+    </div>
+</body>
+</html>

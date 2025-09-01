@@ -33,8 +33,8 @@ public class SecurityConfig {
             
             // HTTP 요청에 대한 접근 권한 설정
             .authorizeHttpRequests(auth -> {
-                // 회원가입, 로그인 페이지는 누구나 접근 가능
-                auth.requestMatchers("/user/signup", "/user/login").permitAll()
+                // home, 회원가입, 로그인 페이지는 누구나 접근 허용
+                auth.requestMatchers("/", "/home", "/user/signup", "/user/login").permitAll()
                     // 정적 리소스(CSS, JS, 이미지)는 누구나 접근 가능
                     .requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                 
@@ -52,7 +52,7 @@ public class SecurityConfig {
             // 폼 기반 로그인 설정
             .formLogin(form -> form
                 .loginPage("/user/login")           // 로그인 페이지 경로
-                .defaultSuccessUrl("/")             // 로그인 성공 시 리다이렉트할 기본 페이지
+                .defaultSuccessUrl("/", true)             // 로그인 성공 시 리다이렉트할 기본 페이지
                 .failureUrl("/user/login?error")    // 로그인 실패 시 리다이렉트할 페이지
             )
             

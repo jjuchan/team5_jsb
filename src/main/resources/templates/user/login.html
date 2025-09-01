@@ -2,35 +2,39 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>로그인</title>
+    <title>로그인 - Team5 JSB</title>
 </head>
 <body>
-    <h2>로그인</h2>
+    <div th:replace="~{common/header :: header}"></div>
     
-    <!-- 에러 메시지 -->
-    <div th:if="${param.error}" style="color: red;">
-        로그인 실패: 아이디 또는 비밀번호를 확인해주세요.
+    <div style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+        <h2 style="text-align: center; margin-bottom: 30px; color: #333;">로그인</h2>
+        
+        <!-- 에러 메시지 -->
+        <div th:if="${param.error}" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+            로그인 실패: 아이디 또는 비밀번호를 확인해주세요.
+        </div>
+        
+        <!-- 로그인 폼 -->
+        <form th:action="@{/user/login}" method="post">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">아이디:</label>
+                <input type="text" name="username" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">비밀번호:</label>
+                <input type="password" name="password" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+            </div>
+            
+            <button type="submit" style="width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">로그인</button>
+        </form>
+        
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+        <p style="text-align: center; color: #666;">
+            아직 회원이 아니신가요? 
+            <a th:href="@{/user/signup}" style="color: #2196F3; text-decoration: none;">회원가입</a>
+        </p>
     </div>
-    
-    <!-- 로그인 폼 -->
-    <form th:action="@{/user/login}" method="post">
-        <div>
-            <label>아이디:</label>
-            <input type="text" name="username" required>
-        </div>
-        <br>
-        <div>
-            <label>비밀번호:</label>
-            <input type="password" name="password" required>
-        </div>
-        <br>
-        <button type="submit">로그인</button>
-    </form>
-    
-    <hr>
-    <p>
-        아직 회원이 아니신가요? 
-        <a th:href="@{/user/signup}">회원가입</a>
-    </p>
 </body>
 </html>

@@ -2,53 +2,54 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>회원가입</title>
+    <title>회원가입 - Team5 JSB</title>
 </head>
 <body>
-    <h2>회원가입</h2>
+    <div th:replace="~{common/header :: header}"></div>
     
-    <!-- 시스템 에러 메시지 (RedirectAttributes로 전달된) -->
-    <div th:if="${message}" style="color: red;">
-        <p th:text="${message}"></p>
+    <div style="max-width: 500px; margin: 50px auto; padding: 30px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+        <h2 style="text-align: center; margin-bottom: 30px; color: #333;">회원가입</h2>
+        
+        <!-- 시스템 에러 메시지 -->
+        <div th:if="${message}" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+            <p th:text="${message}" style="margin: 0;"></p>
+        </div>
+        
+        <!-- 회원가입 폼 -->
+        <form th:action="@{/user/signup}" method="post" th:object="${signupRequest}">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">사용자명:</label>
+                <input type="text" th:field="*{username}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                <!-- 필드별 검증 에러 표시 -->
+                <div th:if="${#fields.hasErrors('username')}" style="background-color: #f8d7da; color: #721c24; padding: 8px; margin-top: 5px; border-radius: 4px; font-size: 12px;">
+                    <p th:each="error : ${#fields.errors('username')}" th:text="${error}" style="margin: 0;"></p>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">비밀번호:</label>
+                <input type="password" th:field="*{password}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                <div th:if="${#fields.hasErrors('password')}" style="background-color: #f8d7da; color: #721c24; padding: 8px; margin-top: 5px; border-radius: 4px; font-size: 12px;">
+                    <p th:each="error : ${#fields.errors('password')}" th:text="${error}" style="margin: 0;"></p>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">이메일:</label>
+                <input type="email" th:field="*{email}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                <div th:if="${#fields.hasErrors('email')}" style="background-color: #f8d7da; color: #721c24; padding: 8px; margin-top: 5px; border-radius: 4px; font-size: 12px;">
+                    <p th:each="error : ${#fields.errors('email')}" th:text="${error}" style="margin: 0;"></p>
+                </div>
+            </div>
+            
+            <button type="submit" style="width: 100%; padding: 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">회원가입</button>
+        </form>
+        
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+        <p style="text-align: center; color: #666;">
+            이미 회원이신가요? 
+            <a th:href="@{/user/login}" style="color: #4CAF50; text-decoration: none;">로그인</a>
+        </p>
     </div>
-    
-    <!-- 회원가입 폼 -->
-    <form th:action="@{/user/signup}" method="post" th:object="${signupRequest}">
-        <div>
-            <label>사용자명:</label>
-            <input type="text" th:field="*{username}" required>
-            <!-- 필드별 검증 에러 표시 -->
-            <div th:if="${#fields.hasErrors('username')}" style="color: red;">
-                <p th:each="error : ${#fields.errors('username')}" th:text="${error}"></p>
-            </div>
-        </div>
-        <br>
-        
-        <div>
-            <label>비밀번호:</label>
-            <input type="password" th:field="*{password}" required>
-            <div th:if="${#fields.hasErrors('password')}" style="color: red;">
-                <p th:each="error : ${#fields.errors('password')}" th:text="${error}"></p>
-            </div>
-        </div>
-        <br>
-        
-        <div>
-            <label>이메일:</label>
-            <input type="email" th:field="*{email}" required>
-            <div th:if="${#fields.hasErrors('email')}" style="color: red;">
-                <p th:each="error : ${#fields.errors('email')}" th:text="${error}"></p>
-            </div>
-        </div>
-        <br>
-        
-        <button type="submit">회원가입</button>
-    </form>
-    
-    <hr>
-    <p>
-        이미 회원이신가요? 
-        <a th:href="@{/user/login}">로그인</a>
-    </p>
 </body>
 </html>
