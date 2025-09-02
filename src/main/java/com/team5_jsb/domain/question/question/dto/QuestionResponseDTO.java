@@ -15,15 +15,17 @@ public class QuestionResponseDTO {
     private LocalDateTime createDate;
     private String authorUsername;
     private Integer viewCount;
+    private Integer answerCount;
 
     public static QuestionResponseDTO fromEntity(Question question) {
         return new QuestionResponseDTO(
                 question.getId(),
                 question.getSubject(),
                 question.getContent(),
-                question.getCreateDate(),
+                question.getCreatedDate(),
                 (question.getAuthor() != null ? question.getAuthor().getUsername() : null),
-                question.getViewCount()
+                question.getViewCount(),
+                question.getAnswerList().size()
         );
     }
 }

@@ -11,6 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     // 답변을 생성일자 내림차순으로 조회
-    @Query("SELECT a FROM Answer a WHERE a.question = :question ORDER BY a.createDate DESC")
-    Page<Answer> findByQuestionOrderByCreateDateDesc(@Param("question") Question question, Pageable pageable);
+    @Query("SELECT a FROM Answer a WHERE a.question = :question ORDER BY a.createdDate DESC")
+    Page<Answer> findByQuestionOrderByCreatedDateDesc(@Param("question") Question question, Pageable pageable);
 }

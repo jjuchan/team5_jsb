@@ -1,5 +1,6 @@
 package com.team5_jsb.domain.user.user.entity;
 
+import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.global.jpa.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
@@ -32,6 +33,6 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "author", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Question> questions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author")
-    private List<Answer> answers;
+    @OneToMany(mappedBy = "author", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<Answer> answers = new ArrayList<>();
 }

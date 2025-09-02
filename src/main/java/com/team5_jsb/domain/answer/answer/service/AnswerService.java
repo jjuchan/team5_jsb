@@ -22,7 +22,7 @@ public class AnswerService {
 
     public void create(Question question, String content) {
         Answer answer = new Answer();
-        answer.setCreateDate(LocalDateTime.now());
+        answer.setCreatedDate(LocalDateTime.now());
         answer.setContent(content);
         answer.setQuestion(question);
         answerRepository.save(answer);
@@ -36,15 +36,15 @@ public class AnswerService {
         answerRepository.findById(answer.getId()).orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
 
         answer.setContent(content);
-        answer.setModifyDate(LocalDateTime.now());
+        answer.setModifiedDate(LocalDateTime.now());
         answerRepository.save(answer);
     }
     
     @Transactional(readOnly = true)
     public Page<Answer> getAnswers(Question question, int page) {
-        // 답변은 항상 최신순으로 정렬 (createDate 내림차순)
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createDate"));
-        return answerRepository.findByQuestionOrderByCreateDateDesc(question, pageable);
+        // 답변은 항상 최신순으로 정렬 (createdDate 내림차순)
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdDate"));
+        return answerRepository.findByQuestionOrderByCreatedDateDesc(question, pageable);
     }
 
     public Answer getAnswer(long id) {

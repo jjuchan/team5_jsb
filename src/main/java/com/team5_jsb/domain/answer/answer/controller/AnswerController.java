@@ -33,7 +33,7 @@ public class AnswerController {
         question.setId(questionResponseDTO.getId());
         question.setSubject(questionResponseDTO.getSubject());
         question.setContent(questionResponseDTO.getContent());
-        question.setCreateDate(questionResponseDTO.getCreateDate());
+        question.setCreatedDate(questionResponseDTO.getCreateDate());
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("question", questionResponseDTO);

@@ -22,7 +22,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
         or u1.username like %:kw%
         or a.content like %:kw%
         or u2.username like %:kw%
-            order by q.createDate desc
+            order by q.createdDate desc
     """)
-    Page<Question> findAllByKeywordOrderByCreateDateDesc(@Param("kw") String kw, Pageable pageable);
+    Page<Question> findAllByKeywordOrderByCreatedDateDesc(@Param("kw") String kw, Pageable pageable);
 }

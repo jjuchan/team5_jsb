@@ -1,18 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title layout:title-pattern="$CONTENT_TITLE - Team5 JSB">Team5 JSB - 오벤져스 질문게시판</title>
+    
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" type="text/css"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" th:href="@{/style.css}">
-    <title>오벤져스 질문게시판!</title>
 </head>
 <body>
-<!-- 기본 템플릿 안에 삽입될 내용 Start -->
-<th:block layout:fragment="content"></th:block>
-<!-- 기본 템플릿 안에 삽입될 내용 End -->
+    <!-- 헤더 영역 -->
+    <div th:replace="~{common/fragment/header :: header}"></div>
+    
+    <!-- 컨텐츠 영역 -->
+    <th:block layout:fragment="content"></th:block>
 </body>
 </html>

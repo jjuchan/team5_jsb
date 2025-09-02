@@ -23,11 +23,11 @@ public class QuestionService {
 
     @Transactional(readOnly = true)
     public Page<QuestionResponseDTO> getList(int page, String kw) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createDate"));
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         Page<Question> pageResult;
         if (kw != null && !kw.isBlank()) {
-            pageResult = questionRepository.findAllByKeywordOrderByCreateDateDesc(kw, pageable);
+            pageResult = questionRepository.findAllByKeywordOrderByCreatedDateDesc(kw, pageable);
         } else {
             pageResult = questionRepository.findAll(pageable);
         }
