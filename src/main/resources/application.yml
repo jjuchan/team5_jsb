@@ -1,6 +1,9 @@
 spring:
   application:
     name: team5_jsb
+  output:
+    ansi:
+      enabled: always
   profiles:
     active: dev
   jpa:
@@ -20,4 +23,3 @@ spring:
 
   output:
     ansi:
-      enabled: always

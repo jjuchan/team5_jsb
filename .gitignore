@@ -36,6 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
-# H2 Database files
+### 개인 임시 폴더 ###
+/temp-resources/
+
+# H2 DB 파일 무시
 *.mv.db
 *.trace.db
+*.h2.db
