@@ -70,8 +70,8 @@ public class UserController {
     @PostMapping("/signup")
     public String signup(
             @Valid @ModelAttribute SignupRequest request,
-            @RequestParam String passwordConfirm,
             BindingResult bindingResult,
+            @RequestParam String passwordConfirm,
             Model model,
             RedirectAttributes redirectAttributes) {
 
