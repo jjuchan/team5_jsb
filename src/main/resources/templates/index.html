@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Team5 JSB - 메인</title>
+    <title>메인</title>
 </head>
 <body>
-    <div th:replace="~{common/header :: header}"></div>
+    <th:block layout:fragment="content">
     <h1>Welcome to Team5 JSB!</h1>
     
     <!-- 로그인한 사용자 정보 표시 -->
@@ -31,5 +31,6 @@
     <div sec:authorize="isAnonymous()">
         <h3>Guest</h3>
     </div>
+    </th:block>
 </body>
 </html>

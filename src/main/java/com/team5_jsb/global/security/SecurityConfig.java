@@ -3,6 +3,8 @@ package com.team5_jsb.global.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,15 +28,25 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         HttpSecurity httpSecurity = http
-            // H2 Console: CSRF 토큰 미지원으로 비활성화
-            .csrf(csrf -> csrf.disable())
+            // CSRF 보호 활성화, 개발환경에서 H2 Console만 예외 처리
+            .csrf(csrf -> {
+                if (environment.acceptsProfiles("dev")) {
+                    csrf.ignoringRequestMatchers("/h2-console/**");
+                }
+                // 운영 환경에서는 CSRF 완전 활성화
+            })
             
             // HTTP 요청에 대한 접근 권한 설정
             .authorizeHttpRequests(auth -> {
                 // home, 회원가입, 로그인 페이지는 누구나 접근 허용
-                auth.requestMatchers("/", "/home", "/user/signup", "/user/login").permitAll()
+                auth.requestMatchers("/", "/home", "/user/signup", "/user/login", "/user/login-validate").permitAll()
                     // 정적 리소스(CSS, JS, 이미지)는 누구나 접근 가능
                     .requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                 

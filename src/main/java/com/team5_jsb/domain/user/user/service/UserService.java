@@ -58,7 +58,6 @@ public class UserService {
             .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
     
-    // 중복 확인 메서드 추가 (Controller에서 사용)
     public boolean isUsernameAvailable(String username) {
         return !userRepository.existsByUsername(username);
     }

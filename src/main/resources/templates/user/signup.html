@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>회원가입 - Team5 JSB</title>
+    <title>회원가입</title>
 </head>
 <body>
-    <div th:replace="~{common/header :: header}"></div>
+    <th:block layout:fragment="content">
     
     <div style="max-width: 500px; margin: 50px auto; padding: 30px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
         <h2 style="text-align: center; margin-bottom: 30px; color: #333;">회원가입</h2>
@@ -16,7 +17,9 @@
         </div>
         
         <!-- 회원가입 폼 -->
-        <form th:action="@{/user/signup}" method="post" th:object="${signupRequest}">
+        <form th:action="@{/user/signup}" method="post" th:object="${signupRequest}" novalidate>
+            <!-- CSRF 토큰 -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">사용자명:</label>
                 <input type="text" th:field="*{username}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
@@ -31,6 +34,15 @@
                 <input type="password" th:field="*{password}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
                 <div th:if="${#fields.hasErrors('password')}" style="background-color: #f8d7da; color: #721c24; padding: 8px; margin-top: 5px; border-radius: 4px; font-size: 12px;">
                     <p th:each="error : ${#fields.errors('password')}" th:text="${error}" style="margin: 0;"></p>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">비밀번호 확인:</label>
+                <input type="password" name="passwordConfirm" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                <!-- 비밀번호 불일치 에러 표시 -->
+                <div th:if="${passwordMismatch}" style="background-color: #f8d7da; color: #721c24; padding: 8px; margin-top: 5px; border-radius: 4px; font-size: 12px;">
+                    <p style="margin: 0;">비밀번호가 일치하지 않습니다.</p>
                 </div>
             </div>
             
@@ -51,5 +63,6 @@
             <a th:href="@{/user/login}" style="color: #4CAF50; text-decoration: none;">로그인</a>
         </p>
     </div>
+    </th:block>
 </body>
 </html>
