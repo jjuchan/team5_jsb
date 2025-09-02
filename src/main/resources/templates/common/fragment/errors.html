@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- DÜÄ Ðì \Ü fragment -->
+    <div th:fragment="fieldErrors(fieldName)" 
+         th:if="${#fields.hasErrors(fieldName)}" 
+         style="background-color: #f8d7da; color: #721c24; padding: 8px; margin-top: 5px; border-radius: 4px; font-size: 12px;">
+        <p th:each="error : ${#fields.errors(fieldName)}" 
+           th:text="${error}" 
+           style="margin: 0;"></p>
+    </div>
+</body>
+</html>

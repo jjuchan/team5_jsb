@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Fragment로 header 명시 -->
+    <header th:fragment="header">
+        <nav style="background-color: #333; padding: 15px 0;">
+            <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+                <!-- 홈 링크 -->
+                <div>
+                    <a th:href="@{/}" style="color: white; text-decoration: none; font-size: 1.5em; font-weight: bold;">Team5 JSB</a>
+                </div>
+                
+                <!-- 메인 네비게이션 -->
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <!-- 질문 목록 -->
+                    <a th:href="@{/question/list}" style="color: white; text-decoration: none;">질문 목록</a>
+                    
+                    <!-- 질문 등록 - 로그인한 상태에서만 이동 -->
+                    <a sec:authorize="isAuthenticated()" th:href="@{/question/create}" style="color: white; text-decoration: none;">질문 등록</a>
+                    
+                    <!-- 질문 등록 - 로그인하지 않은 상태에서는 alert -->
+                    <a sec:authorize="isAnonymous()" href="#" onclick="alert('로그인이 필요한 서비스입니다.'); return false;" style="color: white; text-decoration: none;">질문 등록</a>
+                    <!-- 로그인한 사용자만 보이는 메뉴 -->
+                    <div sec:authorize="isAuthenticated()" style="display: flex; gap: 20px; align-items: center;">
+                        <!-- 사용자 정보 -->
+                        <span style="color: #ccc;">
+                            <span sec:authentication="name"></span>님
+                        </span>
+                        
+                        <!-- 로그아웃 -->
+                        <a th:href="@{/user/logout}" style="background-color: #f44336; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.9em;">로그아웃</a>
+                    </div>
+                    
+                    <!-- 로그인한 사용자만 보임 -->
+                    <div sec:authorize="isAnonymous()" style="display: flex; gap: 10px;">
+                        <a th:href="@{/user/login}" style="background-color: #4CAF50; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.9em;">로그인</a>
+                        <a th:href="@{/user/signup}" style="background-color: #2196F3; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.9em;">회원가입</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+</body>
+</html>

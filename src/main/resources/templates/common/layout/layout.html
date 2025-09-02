@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="$CONTENT_TITLE - Team5 JSB">Team5 JSB</title>
+</head>
+<body>
+    <!-- 헤더 영역 -->
+    <div th:replace="~{/common/fragment/header :: header}"></div>
+    
+    <!-- 컨텐츠 영역 -->
+    <th:block layout:fragment="content"></th:block>
+</body>
+</html>
