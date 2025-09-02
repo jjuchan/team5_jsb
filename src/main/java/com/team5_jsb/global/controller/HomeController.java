@@ -2,6 +2,7 @@ package com.team5_jsb.global.controller;
 
 import com.team5_jsb.domain.user.user.dto.CustomUserDetails;
 import com.team5_jsb.domain.user.user.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

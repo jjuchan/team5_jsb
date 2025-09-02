@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -72,7 +73,14 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .logoutUrl("/user/logout")          // 로그아웃 요청 URL
                 .logoutSuccessUrl("/user/login")    // 로그아웃 성공 시 리다이렉트할 페이지
-            );
+            )
+            .sessionManagement(session ->
+                    session
+                        //한 사용자당 최대 1개의 활성 세
+                        .maximumSessions(1)
+                        //새 로그인 시 기존 세션 만료시
+                        .maxSessionsPreventsLogin(false)
+            );    ;
             
         // 개발 환경에서만 H2 Console의 iframe 사용 허용 (X-Frame-Options 설정)
         if (environment.acceptsProfiles("dev")) {

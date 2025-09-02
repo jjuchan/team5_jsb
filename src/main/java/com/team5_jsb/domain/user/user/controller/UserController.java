@@ -6,6 +6,7 @@ import com.team5_jsb.domain.user.user.entity.User;
 import com.team5_jsb.domain.user.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,10 +41,17 @@ public class UserController {
         return "user/signup";
     }
 
+    @GetMapping("/profile")
+    @ResponseBody
+    public String profilePage(Model model) {
+        return "Profile Page 입니다.";
+    }
+
     @PostMapping("/login-validate")
     public String loginValidate(@Valid @ModelAttribute LoginRequest loginRequest, 
                                BindingResult bindingResult, 
-                               Model model, RedirectAttributes redirectAttributes) {
+                               Model model, RedirectAttributes redirectAttributes,
+                               HttpServletRequest request) {
         if(bindingResult.hasErrors()) {
             model.addAttribute("loginRequest", loginRequest);
             return "user/login";
@@ -57,6 +66,10 @@ public class UserController {
 
             Authentication auth = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
+
+            HttpSession session = request.getSession(true);
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, 
+                               SecurityContextHolder.getContext());
 
             return "redirect:/";  // 로그인 성공 시 홈으로
 
