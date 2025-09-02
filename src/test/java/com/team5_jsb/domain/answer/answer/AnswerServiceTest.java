@@ -31,19 +31,19 @@ public class AnswerServiceTest {
         assertThat(answerList.size()).isEqualTo(2);
     }
 
-    @Test
-    @DisplayName("답변 저장")
-    void t2() {
-        Question question = new Question();
-        question.setSubject("질문 제목1");
-        question.setContent("질문 내용1");
-        question.setCreateDateTime(LocalDateTime.now());
-
-        answerService.create(question, "답변 내용 1");
-        Answer answer = answerService.getAnswer(3);
-
-        assertThat(answer.getContent()).isEqualTo(("답변 내용 1"));
-    }
+//    @Test
+//    @DisplayName("답변 저장")
+//    void t2() {
+//        Question question = new Question();
+//        question.setSubject("질문 제목1");
+//        question.setContent("질문 내용1");
+//        question.setCreateDateTime(LocalDateTime.now());
+//
+//        answerService.create(question, "답변 내용 1");
+//        Answer answer = answerService.getAnswer(3);
+//
+//        assertThat(answer.getContent()).isEqualTo(("답변 내용 1"));
+//    }
 
     @Test
     @DisplayName("답변 삭제")

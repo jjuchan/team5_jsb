@@ -5,6 +5,8 @@ import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.repository.QuestionRepository;
+import com.team5_jsb.domain.user.user.entity.User;
+import com.team5_jsb.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +21,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
     private final int PAGE_SIZE = 10;
+
+    @Transactional(readOnly = true)
+    public Page<QuestionResponseDTO> getMyQuestions(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        return questionRepository
+                .findByAuthor_IdOrderByCreatedDateDesc(userId, pageable)
+                .map(QuestionResponseDTO::fromEntity);
+    }
 
     @Transactional(readOnly = true)
     public Page<QuestionResponseDTO> getList(int page, String kw) {
@@ -35,11 +46,12 @@ public class QuestionService {
         return pageResult.map(QuestionResponseDTO::fromEntity);
     }
 
-    public void create(QuestionCreateDTO questionCreateDTO) {
+    public void create(QuestionCreateDTO questionCreateDTO, User author) {
         // DTO의 데이터를 엔티티로 변환
         Question question = new Question();
         question.setSubject(questionCreateDTO.getSubject());
         question.setContent(questionCreateDTO.getContent());
+        question.setAuthor(author);
         questionRepository.save(question);
         System.out.println("question = " + questionCreateDTO);
     }
