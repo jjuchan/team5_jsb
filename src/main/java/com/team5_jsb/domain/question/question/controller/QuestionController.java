@@ -7,10 +7,13 @@ import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.service.QuestionService;
+import com.team5_jsb.domain.user.user.dto.CustomUserDetails;
+import com.team5_jsb.domain.user.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.team5_jsb.domain.question.question.entity.Question;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,11 +42,12 @@ public class QuestionController {
     }
   
     @PostMapping("/create")
-    public String createQuestion(@Valid QuestionCreateDTO questionCreateDTO, BindingResult bindingResult) {
+    public String createQuestion(@Valid QuestionCreateDTO questionCreateDTO, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (bindingResult.hasErrors()) {
             return "question_form";
         }
-        questionService.create(questionCreateDTO);
+        User author = userDetails.getUser(); // ★ 현재 로그인한 사용자 (엔티티)
+        questionService.create(questionCreateDTO, author);
         return "redirect:/question/list";
     }
 

@@ -7,8 +7,11 @@ import com.team5_jsb.domain.answer.answer.service.AnswerService;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.service.QuestionService;
+import com.team5_jsb.domain.user.user.dto.CustomUserDetails;
+import com.team5_jsb.domain.user.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,21 +30,39 @@ public class AnswerController {
     @PostMapping("/create/{id}")
     public String createAnswer(Model model,
                                @PathVariable("id") long id,
-                               @Valid AnswerCreateDto answerCreateDto, BindingResult bindingResult) {
-        QuestionResponseDTO questionResponseDTO = questionService.getQuestion(id);
-        Question question = new Question();
-        question.setId(questionResponseDTO.getId());
-        question.setSubject(questionResponseDTO.getSubject());
-        question.setContent(questionResponseDTO.getContent());
-        question.setCreatedDate(questionResponseDTO.getCreateDate());
+                               @Valid AnswerCreateDto answerCreateDto, BindingResult bindingResult,
+                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // ✅ 질문은 DTO로 재조립하지 말고 실제 엔티티 로딩
+        Question question = questionService.getQuestionEntity(id);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("question", questionResponseDTO);
+            // 템플릿이 필요로 하는 모델 값 재주입
+            model.addAttribute("question", questionService.getQuestion(id));
+            // 필요 시: 답변 페이징도 넣기 (프로젝트 요구에 맞춰)
+            // model.addAttribute("answerPaging", answerService.getAnswers(question, 0));
             return "question_detail";
         }
 
-        answerService.create(question, answerCreateDto.getContent());
-        return String.format("redirect:/question/detail/%s", id);
+        // ✅ 현재 로그인 사용자 (엔티티)
+        User author = userDetails.getUser();
+
+        // ✅ author 포함 버전 호출
+        answerService.create(question, author, answerCreateDto.getContent());
+        return "redirect:/question/detail/" + id;
+//        QuestionResponseDTO questionResponseDTO = questionService.getQuestion(id);
+//        Question question = new Question();
+//        question.setId(questionResponseDTO.getId());
+//        question.setSubject(questionResponseDTO.getSubject());
+//        question.setContent(questionResponseDTO.getContent());
+//        question.setCreatedDate(questionResponseDTO.getCreateDate());
+//
+//        if (bindingResult.hasErrors()) {
+//            model.addAttribute("question", questionResponseDTO);
+//            return "question_detail";
+//        }
+//
+//        answerService.create(question, answerCreateDto.getContent());
+//        return String.format("redirect:/question/detail/%s", id);
     }
 
     @GetMapping("/delete/{id}")

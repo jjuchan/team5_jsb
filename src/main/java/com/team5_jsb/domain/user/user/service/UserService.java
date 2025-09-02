@@ -1,10 +1,12 @@
 package com.team5_jsb.domain.user.user.service;
 
+import com.team5_jsb.domain.user.user.dto.UserProfileDto;
 import com.team5_jsb.domain.user.user.entity.User;
 import com.team5_jsb.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -64,5 +66,12 @@ public class UserService {
     
     public boolean isEmailAvailable(String email) {
         return !userRepository.existsByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public UserProfileDto getUserProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. id=" + userId));
+        return UserProfileDto.from(user);
     }
 }
