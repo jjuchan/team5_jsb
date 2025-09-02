@@ -6,12 +6,12 @@ import com.team5_jsb.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@Getter
 @Setter
-@NoArgsConstructor
 public class Answer extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")

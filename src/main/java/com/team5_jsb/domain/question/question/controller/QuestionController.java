@@ -1,5 +1,6 @@
 package com.team5_jsb.domain.question.question.controller;
 
+import com.team5_jsb.domain.answer.answer.dto.AnswerCreateDto;
 import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.answer.answer.service.AnswerService;
 import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
@@ -47,17 +48,22 @@ public class QuestionController {
     }
 
     @GetMapping("/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Long id,
-                         @RequestParam(value = "page", defaultValue = "0") int page) {
-        // 질문 DTO (뷰 렌더링용)
-        QuestionResponseDTO question = this.questionService.getQuestion(id);
+    public String detail(@PathVariable("id") Long id,
+                         Model model,
+                         @RequestParam(value = "page", defaultValue = "0") int page,
+                         AnswerCreateDto answerDto) {
+        // 질문 정보 조회 (DTO)
+        QuestionResponseDTO questionDto = this.questionService.getQuestion(id);
 
-        // 답변 페이징은 엔티티 필요
+        // 답변 페이징
         Question questionEntity = this.questionService.getQuestionEntity(id);
         Page<Answer> answerPaging = this.answerService.getAnswers(questionEntity, page);
 
-        model.addAttribute("question", question);
+        // 모델에 데이터 추가
+        model.addAttribute("question", questionDto);
         model.addAttribute("answerPaging", answerPaging);
+        model.addAttribute("answerCreateDto", answerDto);  // 답변 작성 폼을 위한 DTO 추가
+
         return "question_detail";
     }
       
