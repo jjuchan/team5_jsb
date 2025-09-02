@@ -56,11 +56,7 @@ public class SecurityConfig {
                 if (environment.acceptsProfiles("dev")) {
                     auth.requestMatchers("/h2-console/**").permitAll();
                 }
-                
-                // /admin으로 시작하는 URL은 ADMIN 권한을 가진 사용자만 접근 가능
-                auth.requestMatchers("/admin/**").hasRole("ADMIN")
-                    // 위에서 명시하지 않은 모든 요청은 인증 필요
-                    .anyRequest().authenticated();
+                auth.anyRequest().authenticated();
             })
             
             // 폼 기반 로그인 설정
