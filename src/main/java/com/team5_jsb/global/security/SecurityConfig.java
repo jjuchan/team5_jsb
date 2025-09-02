@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -71,7 +72,8 @@ public class SecurityConfig {
             
             // 로그아웃 설정
             .logout(logout -> logout
-                .logoutUrl("/user/logout")          // 로그아웃 요청 URL
+                .logoutUrl("/user/logout") // 로그아웃 요청 URL
+                .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout", "GET")) // Get 허용
                 .logoutSuccessUrl("/user/login")    // 로그아웃 성공 시 리다이렉트할 페이지
             )
             .sessionManagement(session ->
