@@ -83,4 +83,12 @@ public class QuestionService {
             throw new IllegalArgumentException("해당 ID의 질문을 찾을 수 없습니다.");
         }
     }
+
+    @Transactional
+    public void increaseViewCount(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다."));
+        question.increaseViewCount();
+        questionRepository.save(question);
+    }
 }

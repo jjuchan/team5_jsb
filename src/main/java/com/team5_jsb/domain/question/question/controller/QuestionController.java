@@ -53,6 +53,8 @@ public class QuestionController {
                          @RequestParam(value = "page", defaultValue = "0") int page,
                          @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
                          AnswerCreateDto answerDto) {
+        // 조회수 증가
+        questionService.increaseViewCount(id);
         // 질문 정보 조회 (DTO)
         QuestionResponseDTO questionDto = this.questionService.getQuestion(id);
 
