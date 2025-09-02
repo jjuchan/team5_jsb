@@ -51,13 +51,14 @@ public class QuestionController {
     public String detail(@PathVariable("id") Long id,
                          Model model,
                          @RequestParam(value = "page", defaultValue = "0") int page,
+                         @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
                          AnswerCreateDto answerDto) {
         // 질문 정보 조회 (DTO)
         QuestionResponseDTO questionDto = this.questionService.getQuestion(id);
 
         // 답변 페이징
         Question questionEntity = this.questionService.getQuestionEntity(id);
-        Page<Answer> answerPaging = this.answerService.getAnswers(questionEntity, page);
+        Page<Answer> answerPaging = this.answerService.getAnswers(questionEntity, answerPage);
 
         // 모델에 데이터 추가
         model.addAttribute("question", questionDto);

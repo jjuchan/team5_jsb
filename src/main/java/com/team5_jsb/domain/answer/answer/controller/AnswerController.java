@@ -5,6 +5,7 @@ import com.team5_jsb.domain.answer.answer.dto.AnswerUpdateDto;
 import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.answer.answer.service.AnswerService;
 import com.team5_jsb.domain.question.question.entity.Question;
+import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.service.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +28,15 @@ public class AnswerController {
     public String createAnswer(Model model,
                                @PathVariable("id") long id,
                                @Valid AnswerCreateDto answerCreateDto, BindingResult bindingResult) {
-        Question question = questionService.getQuestion(id);
+        QuestionResponseDTO questionResponseDTO = questionService.getQuestion(id);
+        Question question = new Question();
+        question.setId(questionResponseDTO.getId());
+        question.setSubject(questionResponseDTO.getSubject());
+        question.setContent(questionResponseDTO.getContent());
+        question.setCreateDate(questionResponseDTO.getCreateDate());
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("question", question);
+            model.addAttribute("question", questionResponseDTO);
             return "question_detail";
         }
 

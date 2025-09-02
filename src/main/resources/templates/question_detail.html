@@ -1,54 +1,141 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
-<div layout:fragment="content" class="container">
-    <!-- 질문 -->
-    <h2 class="border-bottom py-2" th:text="${question.subject}"></h2>
-    <div class="card my-3">
+<head>
+    <title>질문 상세보기</title>
+</head>
+<body>
+<div layout:fragment="content" class="container my-3">
+    <!-- 질문 상세 정보 -->
+    <div class="card mb-4">
         <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;" th:text="${question.content}"></div>
-            <div class="d-flex justify-content-end">
-                <div class="badge bg-light text-dark p-2 text-start">
-                    <div th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></div>
-                </div>
+            <h2 class="card-title" th:text="${question.subject}">제목</h2>
+            <div class="text-muted mb-3">
+                <span>작성자: </span>
+                <span th:text="${question.authorUsername != null ? question.authorUsername : '알 수 없음'}"></span>
+                <span> | </span>
+                <span>작성일: </span>
+                <span th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></span>
+                <span> | </span>
+                <span>조회수: </span>
+                <span th:text="${question.viewCount}"></span>
             </div>
+            <hr>
+            <div class="card-text" th:utext="${question.content}">내용</div>
         </div>
     </div>
-    <div class="my-3 d-flex justify-content-between">
-        <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-primary my-2">
-            <span th:text="수정하기"></span>
-        </a>
-        <a th:href="@{|/question/delete/${question.id}|}" class="btn btn-sm btn-outline-secondary" th:text="삭제하기"></a>
-        <a href="/question/list" class="btn btn-primary my-2">목록으로 돌아가기</a>
-    </div>
-    <!-- 답변의 갯수 표시 -->
-    <h5 class="border-bottom my-3 py-2"
-        th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
-    <!-- 답변 반복 시작 -->
-    <div class="card my-3" th:each="answer : ${question.answerList}">
-        <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
-            <div class="d-flex justify-content-end">
-                <div class="badge bg-light text-dark p-2 text-start">
-                    <div th:text="${#temporals.format(answer.createDateTime, 'yyyy-MM-dd HH:mm')}"></div>
-                </div>
-            </div>
-            <div class="my-3">
-                <a th:href="@{|/answer/modify/${answer.id}|}" class="btn btn-sm btn-outline-secondary"
-                   th:text="수정"></a>
-                <a th:href="@{|/answer/delete/${answer.id}|}"
-                   class="delete btn btn-sm btn-outline-secondary"
-                   th:text="삭제"></a>
-            </div>
-        </div>
-    </div>
-    <!-- 답변 반복 끝  -->
-    <!-- 답변 작성 -->
-    <form th:action="@{|/answer/create/${question.id}|}" th:object="${answerCreateDto}" method="post" class="my-3">
-        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
-        <textarea th:field="*{content}" rows="5" class="form-control"></textarea>
-        <input type="submit" value="답변등록" class="btn btn-primary my-2">
-    </form>
-</div>
 
+    <!-- 버튼 영역 -->
+    <div class="mb-4">
+        <a th:href="@{/question/list(page=${param.page ?: 0}, kw=${param.kw})}" class="btn btn-outline-secondary">
+            <i class="bi bi-list"></i> 목록
+        </a>
+        <a th:href="@{/question/modify/{id}(id=${question.id}, page=${param.page}, kw=${param.kw})}"
+           class="btn btn-primary">수정</a>
+        <a th:href="@{/question/delete/{id}(id=${question.id})}" class="btn btn-danger"
+           onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+    </div>
+
+    <!-- 답변 목록 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">답변 목록</h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${!answerPaging.empty}">
+                <div th:each="answer : ${answerPaging}" class="mb-4 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong th:text="${answer.author != null ? answer.author.username : '알 수 없음'}"></strong>
+                            <span class="text-muted ms-2"
+                                  th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
+                        <div>
+                            <a th:href="@{/answer/modify/{id}(id=${answer.id}, page=${param.page}, kw=${param.kw})}"
+                               class="btn btn-sm btn-outline-primary me-2">수정</a>
+                            <a th:href="@{/answer/delete/{id}(id=${answer.id}, page=${param.page}, kw=${param.kw})}"
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+                        </div>
+                    </div>
+                    <div class="card-text" th:utext="${answer.content}"></div>
+                </div>
+            </div>
+            <div th:if="${answerPaging.empty}" class="text-center py-4">
+                <p class="text-muted">등록된 답변이 없습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 답변 페이지네이션 -->
+    <nav aria-label="Answer pagination" class="mt-4" th:if="${answerPaging.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <!-- 첫 페이지 -->
+            <li class="page-item" th:classappend="${answerPaging.first} ? 'disabled'">
+                <a th:if="${!answerPaging.first}" class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=0, kw=${param.kw})}" aria-label="First">
+                    <span aria-hidden="true">««</span>
+                </a>
+                <span th:if="${answerPaging.first}" class="page-link" aria-hidden="true">««</span>
+            </li>
+
+            <!-- 이전 페이지 -->
+            <li class="page-item" th:classappend="${answerPaging.first} ? 'disabled'">
+                <a th:if="${!answerPaging.first}" class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.number - 1}, kw=${param.kw})}" aria-label="Previous">
+                    <span aria-hidden="true">«</span>
+                </a>
+                <span th:if="${answerPaging.first}" class="page-link" aria-hidden="true">«</span>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li th:each="page : ${#numbers.sequence(
+                    T(java.lang.Math).max(1, answerPaging.number - 2),
+                    T(java.lang.Math).min(answerPaging.totalPages, answerPaging.number + 2)
+                )}"
+                th:class="'page-item' + (${page == answerPaging.number + 1} ? ' active' : '')">
+                <a class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${page - 1}, kw=${param.kw})}" th:text="${page}"></a>
+            </li>
+
+            <!-- 다음 페이지 -->
+            <li class="page-item" th:classappend="${answerPaging.last} ? 'disabled'">
+                <a th:if="${!answerPaging.last}" class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.number + 1}, kw=${param.kw})}" aria-label="Next">
+                    <span aria-hidden="true">»</span>
+                </a>
+                <span th:if="${answerPaging.last}" class="page-link" aria-hidden="true">»</span>
+            </li>
+
+            <!-- 마지막 페이지 -->
+            <li class="page-item" th:classappend="${answerPaging.last} ? 'disabled'">
+                <a th:if="${!answerPaging.last}" class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.totalPages - 1}, kw=${param.kw})}" aria-label="Last">
+                    <span aria-hidden="true">»»</span>
+                </a>
+                <span th:if="${answerPaging.last}" class="page-link" aria-hidden="true">»»</span>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- 답변 작성 폼 -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">답변 작성</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/answer/create/{id}(id=${question.id})}" method="post" class="needs-validation" novalidate>
+                <input type="hidden" name="page" th:value="${param.page}">
+                <input type="hidden" name="kw" th:value="${param.kw}">
+                <div class="mb-3">
+                    <textarea name="content" class="form-control" rows="5" required></textarea>
+                    <div class="invalid-feedback">
+                        답변 내용을 입력해주세요.
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> 답변등록
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+</body>
 </html>
