@@ -57,14 +57,14 @@ public class QuestionController {
                          @RequestParam(value = "page", defaultValue = "0") int page,
                          @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
                          AnswerCreateDto answerDto) {
-        // 조회수 증가
-        questionService.increaseViewCount(id);
+        // 답변 등록 직후 리다이렉트된 경우, 조회수를 증가시키지 않음
+        boolean increaseView = !model.containsAttribute("justAnswered");
+
         // 질문 정보 조회 (DTO)
-        QuestionResponseDTO questionDto = this.questionService.getQuestion(id);
+        QuestionResponseDTO questionDto = this.questionService.getQuestion(id, increaseView);
 
         // 답변 페이징
-        Question questionEntity = this.questionService.getQuestionEntity(id);
-        Page<Answer> answerPaging = this.answerService.getAnswers(questionEntity, answerPage);
+        Page<Answer> answerPaging = this.answerService.getAnswers(questionService.getQuestionEntity(id), answerPage);
 
         // 모델에 데이터 추가
         model.addAttribute("question", questionDto);

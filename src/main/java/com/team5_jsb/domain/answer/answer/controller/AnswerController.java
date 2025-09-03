@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/answer")
 @RequiredArgsConstructor
@@ -31,15 +32,16 @@ public class AnswerController {
     public String createAnswer(Model model,
                                @PathVariable("id") long id,
                                @Valid AnswerCreateDto answerCreateDto, BindingResult bindingResult,
-                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+                               @AuthenticationPrincipal CustomUserDetails userDetails,
+                               RedirectAttributes redirectAttributes) {
         // ✅ 질문은 DTO로 재조립하지 말고 실제 엔티티 로딩
         Question question = questionService.getQuestionEntity(id);
 
         if (bindingResult.hasErrors()) {
             // 템플릿이 필요로 하는 모델 값 재주입
-            model.addAttribute("question", questionService.getQuestion(id));
+            model.addAttribute("question", questionService.getQuestion(id, false)); // 조회수 증가 방지
             // 필요 시: 답변 페이징도 넣기 (프로젝트 요구에 맞춰)
-            // model.addAttribute("answerPaging", answerService.getAnswers(question, 0));
+            model.addAttribute("answerPaging", answerService.getAnswers(question, 0));
             return "question_detail";
         }
 
@@ -48,21 +50,8 @@ public class AnswerController {
 
         // ✅ author 포함 버전 호출
         answerService.create(question, author, answerCreateDto.getContent());
+        redirectAttributes.addFlashAttribute("justAnswered", true);
         return "redirect:/question/detail/" + id;
-//        QuestionResponseDTO questionResponseDTO = questionService.getQuestion(id);
-//        Question question = new Question();
-//        question.setId(questionResponseDTO.getId());
-//        question.setSubject(questionResponseDTO.getSubject());
-//        question.setContent(questionResponseDTO.getContent());
-//        question.setCreatedDate(questionResponseDTO.getCreateDate());
-//
-//        if (bindingResult.hasErrors()) {
-//            model.addAttribute("question", questionResponseDTO);
-//            return "question_detail";
-//        }
-//
-//        answerService.create(question, answerCreateDto.getContent());
-//        return String.format("redirect:/question/detail/%s", id);
     }
 
     @GetMapping("/delete/{id}")

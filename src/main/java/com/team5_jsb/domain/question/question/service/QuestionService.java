@@ -58,9 +58,20 @@ public class QuestionService {
 
     @Transactional
     public QuestionResponseDTO getQuestion(Long id) {
-        return questionRepository.findById(id)
-                .map(QuestionResponseDTO::fromEntity)
+        // 기본적으로 조회수를 증가시키는 버전
+        return getQuestion(id, true);
+    }
+
+    @Transactional
+    public QuestionResponseDTO getQuestion(Long id, boolean increaseView) {
+        Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다."));
+
+        if (increaseView) {
+            question.increaseViewCount(); // 조회수 증가
+        }
+
+        return QuestionResponseDTO.fromEntity(question);
     }
 
     @Transactional(readOnly = true)
