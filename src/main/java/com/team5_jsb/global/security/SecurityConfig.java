@@ -49,6 +49,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> {
                 // home, 회원가입, 로그인 페이지는 누구나 접근 허용
                 auth.requestMatchers("/", "/home", "/user/signup", "/user/login", "/user/login-validate").permitAll()
+                    // OAuth2 관련 경로 추가
+                    .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                     // 정적 리소스(CSS, JS, 이미지)는 누구나 접근 가능
                     .requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                 
@@ -71,6 +73,11 @@ public class SecurityConfig {
                 .logoutUrl("/user/logout") // 로그아웃 요청 URL
                 .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout", "GET")) // Get 허용
                 .logoutSuccessUrl("/user/login")    // 로그아웃 성공 시 리다이렉트할 페이지
+            )
+            // OAuth2 로그인 설정 추가
+            .oauth2Login(oauth2 -> oauth2
+                    .loginPage("/user/login")
+                    .defaultSuccessUrl("/", true)
             )
             .sessionManagement(session ->
                     session

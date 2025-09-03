@@ -39,8 +39,11 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation ("org.springframework.boot:spring-boot-starter-validation")
-    implementation ("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+    //google social 로그인 설정 관련
+    implementation(platform("com.google.cloud:spring-cloud-gcp-dependencies:4.9.2"))
+    implementation("com.google.cloud:spring-cloud-gcp-starter-secretmanager")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+
 }
 
 tasks.withType<Test> {
