@@ -19,7 +19,6 @@
                 <span> | </span>
                 <span>작성일: </span>
                 <span th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}"></span>
-
                 <span th:if="${question.modifiedDate != null and question.modifiedDate != question.createDate}">
                 | 수정일: <span th:text="${#temporals.format(question.modifiedDate, 'yyyy-MM-dd HH:mm')}"></span>
                 </span>
