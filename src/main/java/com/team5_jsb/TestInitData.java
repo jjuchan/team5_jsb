@@ -1,5 +1,6 @@
 package com.team5_jsb;
 
+
 import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.answer.answer.repository.AnswerRepository;
 import com.team5_jsb.domain.question.question.entity.Question;
@@ -15,6 +16,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Configuration
 @RequiredArgsConstructor
 public class TestInitData {
@@ -26,6 +29,7 @@ public class TestInitData {
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     @Bean
     ApplicationRunner initApplicationRunner(){

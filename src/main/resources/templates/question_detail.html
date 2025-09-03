@@ -48,10 +48,14 @@
             <div th:if="${!answerPaging.empty}">
                 <div th:each="answer : ${answerPaging}" class="mb-4 pb-3 border-bottom">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
+                        <div class="text-muted ms-2">
+                            <span>작성자: </span>
                             <strong th:text="${answer.author != null ? answer.author.username : '알 수 없음'}"></strong>
-                            <span class="text-muted ms-2"
-                                  th:text="${#temporals.format(answer.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
+                            <span> | 작성일: </span>
+                            <span th:text="${#temporals.format(answer.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
+                            <span th:if="${answer.modifiedDate != null and answer.modifiedDate != answer.createdDate}">
+                            | 수정일: <span th:text="${#temporals.format(answer.modifiedDate, 'yyyy-MM-dd HH:mm')}"></span>
+                </span>
                         </div>
                         <div>
                             <a th:href="@{/answer/modify/{id}(id=${answer.id}, page=${param.page}, kw=${param.kw})}"
@@ -75,7 +79,9 @@
         <ul class="pagination justify-content-center">
             <!-- 첫 페이지 -->
             <li class="page-item" th:classappend="${answerPaging.first} ? 'disabled'">
-                <a th:if="${!answerPaging.first}" class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=0, kw=${param.kw})}" aria-label="First">
+                <a th:if="${!answerPaging.first}" class="page-link"
+                   th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=0, kw=${param.kw})}"
+                   aria-label="First">
                     <span aria-hidden="true">««</span>
                 </a>
                 <span th:if="${answerPaging.first}" class="page-link" aria-hidden="true">««</span>
@@ -83,7 +89,9 @@
 
             <!-- 이전 페이지 -->
             <li class="page-item" th:classappend="${answerPaging.first} ? 'disabled'">
-                <a th:if="${!answerPaging.first}" class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.number - 1}, kw=${param.kw})}" aria-label="Previous">
+                <a th:if="${!answerPaging.first}" class="page-link"
+                   th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.number - 1}, kw=${param.kw})}"
+                   aria-label="Previous">
                     <span aria-hidden="true">«</span>
                 </a>
                 <span th:if="${answerPaging.first}" class="page-link" aria-hidden="true">«</span>
@@ -95,12 +103,16 @@
                     T(java.lang.Math).min(answerPaging.totalPages, answerPaging.number + 2)
                 )}"
                 th:class="'page-item' + (${page == answerPaging.number + 1} ? ' active' : '')">
-                <a class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${page - 1}, kw=${param.kw})}" th:text="${page}"></a>
+                <a class="page-link"
+                   th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${page - 1}, kw=${param.kw})}"
+                   th:text="${page}"></a>
             </li>
 
             <!-- 다음 페이지 -->
             <li class="page-item" th:classappend="${answerPaging.last} ? 'disabled'">
-                <a th:if="${!answerPaging.last}" class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.number + 1}, kw=${param.kw})}" aria-label="Next">
+                <a th:if="${!answerPaging.last}" class="page-link"
+                   th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.number + 1}, kw=${param.kw})}"
+                   aria-label="Next">
                     <span aria-hidden="true">»</span>
                 </a>
                 <span th:if="${answerPaging.last}" class="page-link" aria-hidden="true">»</span>
@@ -108,7 +120,9 @@
 
             <!-- 마지막 페이지 -->
             <li class="page-item" th:classappend="${answerPaging.last} ? 'disabled'">
-                <a th:if="${!answerPaging.last}" class="page-link" th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.totalPages - 1}, kw=${param.kw})}" aria-label="Last">
+                <a th:if="${!answerPaging.last}" class="page-link"
+                   th:href="@{/question/detail/{id}(id=${question.id}, page=${param.page}, answerPage=${answerPaging.totalPages - 1}, kw=${param.kw})}"
+                   aria-label="Last">
                     <span aria-hidden="true">»»</span>
                 </a>
                 <span th:if="${answerPaging.last}" class="page-link" aria-hidden="true">»»</span>
@@ -122,7 +136,8 @@
             <h5 class="mb-0">답변 작성</h5>
         </div>
         <div class="card-body">
-            <form th:action="@{/answer/create/{id}(id=${question.id})}" method="post" class="needs-validation" novalidate>
+            <form th:action="@{/answer/create/{id}(id=${question.id})}" method="post" class="needs-validation"
+                  novalidate>
                 <input type="hidden" name="page" th:value="${param.page}">
                 <input type="hidden" name="kw" th:value="${param.kw}">
                 <div class="mb-3">
