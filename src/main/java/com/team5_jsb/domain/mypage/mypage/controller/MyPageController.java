@@ -42,7 +42,7 @@ public class MyPageController {
         model.addAttribute("user", userService.getUserProfile(userId));
 
         // 내가 쓴 질문(최신순, 페이지 10개)
-        Pageable pageable = PageRequest.of(page, 5);
+        Pageable pageable = PageRequest.of(page, 10);
         Page<Question> questions = questionRepository.findByAuthor_IdOrderByCreatedDateDesc(userId, pageable);
         model.addAttribute("questions", questions);
 
