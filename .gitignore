@@ -43,3 +43,11 @@ out/
 *.mv.db
 *.trace.db
 *.h2.db
+
+# OAuth 관리 파일
+src/main/resources/application-oauth.yml
+.env
+
+# Backup 파일들
+*backup*
+*.backup

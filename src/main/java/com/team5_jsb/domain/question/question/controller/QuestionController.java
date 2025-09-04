@@ -7,12 +7,14 @@ import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.service.QuestionService;
+import com.team5_jsb.domain.user.user.dto.CustomOidcUser;
 import com.team5_jsb.domain.user.user.dto.CustomUserDetails;
 import com.team5_jsb.domain.user.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.team5_jsb.domain.question.question.entity.Question;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,11 +44,11 @@ public class QuestionController {
     }
   
     @PostMapping("/create")
-    public String createQuestion(@Valid QuestionCreateDTO questionCreateDTO, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String createQuestion(@Valid QuestionCreateDTO questionCreateDTO, BindingResult bindingResult, Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return "question_form";
         }
-        User author = userDetails.getUser(); // ★ 현재 로그인한 사용자 (엔티티)
+        User author = getCurrentUser(authentication); // ★ 현재 로그인한 사용자 (엔티티)
         questionService.create(questionCreateDTO, author);
         return "redirect:/question/list";
     }
@@ -104,5 +106,18 @@ public class QuestionController {
 
         return "redirect:/question/list";
       
+    }
+    
+    // 일반 로그인(CustomUserDetails), Google 소셜 로그인(CustomOidcUser) 모두 대응
+    private User getCurrentUser(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        
+        if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal).getUser();
+        } else if (principal instanceof CustomOidcUser) {
+            return ((CustomOidcUser) principal).getUser();
+        }
+        
+        throw new IllegalArgumentException("지원하지 않는 Principal 타입입니다: " + principal.getClass().getSimpleName());
     }
 }

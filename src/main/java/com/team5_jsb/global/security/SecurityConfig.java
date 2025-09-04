@@ -1,7 +1,10 @@
 package com.team5_jsb.global.security;
 
+import com.team5_jsb.domain.user.user.service.CustomOidcUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -18,10 +21,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
     
     private final Environment environment;
+    private final CustomOidcUserService customOidcUserService;
 
-    // 생성자를 통한 의존성 주입 - Environment 객체를 받아옴
-    public SecurityConfig(Environment environment) {
+    public SecurityConfig(Environment environment, 
+                         @Lazy CustomOidcUserService customOidcUserService) {
         this.environment = environment;
+        this.customOidcUserService = customOidcUserService;
     }
 
     @Bean
@@ -49,6 +54,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> {
                 // home, 회원가입, 로그인 페이지는 누구나 접근 허용
                 auth.requestMatchers("/", "/home", "/user/signup", "/user/login", "/user/login-validate").permitAll()
+                    // OAuth2 관련 경로 추가
+                    .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                     // 정적 리소스(CSS, JS, 이미지)는 누구나 접근 가능
                     .requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                 
@@ -71,6 +78,14 @@ public class SecurityConfig {
                 .logoutUrl("/user/logout") // 로그아웃 요청 URL
                 .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout", "GET")) // Get 허용
                 .logoutSuccessUrl("/user/login")    // 로그아웃 성공 시 리다이렉트할 페이지
+            )
+            // OIDC 로그인 설정 추가 (Google은 OIDC사용, OAuth2는 KAKAO, NAVER)
+            .oauth2Login(oauth2 -> oauth2
+                    .loginPage("/user/login")
+                    .defaultSuccessUrl("/", true)
+                    .userInfoEndpoint(userInfo ->
+                            userInfo.oidcUserService(customOidcUserService)
+                    )
             )
             .sessionManagement(session ->
                     session
