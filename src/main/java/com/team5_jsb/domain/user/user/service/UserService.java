@@ -4,15 +4,20 @@ import com.team5_jsb.domain.user.user.dto.UserProfileDto;
 import com.team5_jsb.domain.user.user.entity.User;
 import com.team5_jsb.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    
+    public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     // 회원가입 처리
     public User register(String username, String password, String email) {
