@@ -30,7 +30,10 @@
                         <span style="color: #ccc;">
                             <span sec:authentication="name"></span>님
                         </span>
-                        
+
+                        <!-- 마이 페이지  -->
+                        <a th:href="@{/mypage}" style="color: white; text-decoration: none;">My page</a>
+
                         <!-- 로그아웃 -->
                         <a th:href="@{/user/logout}" style="background-color: #f44336; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 0.9em;">로그아웃</a>
                     </div>

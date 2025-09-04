@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8"/>
+    <title layout:fragment="title">My Page</title>
+
+    <style>
+        .mypage-container {
+            max-width: 960px;
+            margin: 3rem auto;
+            padding: 0 1.25rem;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #f1f1f3;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 0.75rem;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7ea8ff 0%, #64d7f7 100%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        .title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .muted {
+            color: #666;
+            font-size: .95rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+        @media (min-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 .75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+        }
+
+        .item {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: .9rem 1rem;
+            transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+            background: #fff;
+        }
+
+        .item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border-color: #e6e6eb;
+        }
+
+        .item-title {
+            font-weight: 700;
+            margin: 0 0 .25rem;
+            line-height: 1.35;
+        }
+
+        .item-title a {
+            text-decoration: none;
+            color: #111;
+        }
+
+        .meta {
+            color: #888;
+            font-size: .9rem;
+        }
+
+        .pager {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            margin-top: .9rem;
+        }
+
+        .btn {
+            border: 1px solid #ddd;
+            background: #fff;
+            padding: .45rem .8rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            transition: background .15s ease, border-color .15s ease;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .btn:hover:not(.btn-disabled) {
+            background: #f7f7fb;
+            border-color: #dcdce3;
+        }
+
+        .btn-disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .page-indicator {
+            font-size: .95rem;
+            color: #666;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .empty {
+            border: 1px dashed #d9d9e2;
+            border-radius: 12px;
+            padding: 1rem;
+            color: #7a7a85;
+            text-align: center;
+            background: #fafafe;
+        }
+    </style>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <div class="mypage-container">
+
+        <div class="card">
+            <div class="card-header">
+                <div class="avatar" th:text="${user != null ? #strings.substring(user.username, 0, 1).toUpperCase() : 'U'}">U</div>
+                <div>
+                    <h1 class="title" th:text="${user != null ? user.username + ' 님의 마이페이지' : 'My Page'}">My Page</h1>
+                    <div class="muted" th:if="${user != null}">
+                        <span>ID: </span><span th:text="${user.id}"></span>
+                        <span style="margin: 0 .5rem;">•</span>
+                        <span th:text="${user.email}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+
+            <!-- 내 질문 -->
+            <div class="card">
+                <h3 class="section-title">내가 작성한 질문</h3>
+
+                <ul class="list" th:if="${questions != null and questions.totalElements > 0}">
+                    <li class="item" th:each="q : ${questions.content}">
+                        <p class="item-title">
+                            <a th:href="@{/question/detail/{id}(id=${q.id})}" th:text="${q.subject}">질문 제목</a>
+                        </p>
+                        <div class="meta">
+                            <span th:text="'조회수 ' + ${q.viewCount}">조회수 0</span>
+                            <span th:if="${q.createdDate != null}" style="margin-left:.5rem"
+                                  th:text="${#temporals.format(q.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="empty" th:if="${questions == null or questions.totalElements == 0}">
+                    아직 작성한 질문이 없어요.
+                </div>
+
+                <div class="pager" th:if="${questions != null and questions.totalPages > 1}">
+                    <div class="pager-nav">
+                        <a class="btn"
+                           th:class="${questions.hasPrevious()} ? 'btn' : 'btn btn-disabled'"
+                           th:if="${questions.hasPrevious()}"
+                           th:href="@{/mypage(page=${questions.number - 1}, answerPage=${answers != null ? answers.number : 0})}">이전</a>
+                        <span class="btn btn-disabled" th:unless="${questions.hasPrevious()}">이전</span>
+                    </div>
+
+                    <span class="page-indicator"
+                          th:text="${questions.number + 1} + ' / ' + ${questions.totalPages}">1 / 1</span>
+
+                    <div class="pager-nav">
+                        <a class="btn"
+                           th:class="${questions.hasNext()} ? 'btn' : 'btn btn-disabled'"
+                           th:if="${questions.hasNext()}"
+                           th:href="@{/mypage(page=${questions.number + 1}, answerPage=${answers != null ? answers.number : 0})}">다음</a>
+                        <span class="btn btn-disabled" th:unless="${questions.hasNext()}">다음</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 내 답변 -->
+            <div class="card">
+                <h3 class="section-title">내가 작성한 답변</h3>
+
+                <ul class="list" th:if="${answers != null and answers.totalElements > 0}">
+                    <li class="item" th:each="a : ${answers.content}">
+                        <p class="item-title"
+                           th:text="${a.content != null && #strings.length(a.content) > 100
+                        ? #strings.substring(a.content, 0, 100) + '…' : a.content}">답변 내용</p>
+                        <div class="meta">
+                            <a th:if="${a.question != null}"
+                               th:href="@{/question/detail/{id}(id=${a.question.id})}"
+                               th:text="'질문: ' + ${a.question.subject}">질문 제목</a>
+                            <span th:if="${a.createdDate != null}" style="margin-left:.5rem"
+                                  th:text="${#temporals.format(a.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="empty" th:if="${answers == null or answers.totalElements == 0}">
+                    아직 작성한 답변이 없어요.
+                </div>
+
+                <div class="pager" th:if="${answers != null and answers.totalPages > 1}">
+                    <div class="pager-nav">
+                        <a class="btn"
+                           th:if="${answers.hasPrevious()}"
+                           th:href="@{/mypage(page=${questions != null ? questions.number : 0}, answerPage=${answers.number - 1})}">이전</a>
+                        <span class="btn btn-disabled" th:unless="${answers.hasPrevious()}">이전</span>
+                    </div>
+
+                    <span class="page-indicator"
+                          th:text="${answers.number + 1} + ' / ' + ${answers.totalPages}">1 / 1</span>
+
+                    <div class="pager-nav">
+                        <a class="btn"
+                           th:if="${answers.hasNext()}"
+                           th:href="@{/mypage(page=${questions != null ? questions.number : 0}, answerPage=${answers.number + 1})}">다음</a>
+                        <span class="btn btn-disabled" th:unless="${answers.hasNext()}">다음</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

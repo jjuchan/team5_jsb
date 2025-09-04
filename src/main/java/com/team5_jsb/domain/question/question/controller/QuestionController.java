@@ -7,10 +7,13 @@ import com.team5_jsb.domain.question.question.dto.QuestionCreateDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.dto.QuestionUpdateDto;
 import com.team5_jsb.domain.question.question.service.QuestionService;
+import com.team5_jsb.domain.user.user.dto.CustomUserDetails;
+import com.team5_jsb.domain.user.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.team5_jsb.domain.question.question.entity.Question;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,11 +42,12 @@ public class QuestionController {
     }
   
     @PostMapping("/create")
-    public String createQuestion(@Valid QuestionCreateDTO questionCreateDTO, BindingResult bindingResult) {
+    public String createQuestion(@Valid QuestionCreateDTO questionCreateDTO, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (bindingResult.hasErrors()) {
             return "question_form";
         }
-        questionService.create(questionCreateDTO);
+        User author = userDetails.getUser(); // ★ 현재 로그인한 사용자 (엔티티)
+        questionService.create(questionCreateDTO, author);
         return "redirect:/question/list";
     }
 
@@ -53,14 +57,14 @@ public class QuestionController {
                          @RequestParam(value = "page", defaultValue = "0") int page,
                          @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
                          AnswerCreateDto answerDto) {
-        // 조회수 증가
-        questionService.increaseViewCount(id);
+        // 답변 등록 직후 리다이렉트된 경우, 조회수를 증가시키지 않음
+        boolean increaseView = !model.containsAttribute("justAnswered");
+
         // 질문 정보 조회 (DTO)
-        QuestionResponseDTO questionDto = this.questionService.getQuestion(id);
+        QuestionResponseDTO questionDto = this.questionService.getQuestion(id, increaseView);
 
         // 답변 페이징
-        Question questionEntity = this.questionService.getQuestionEntity(id);
-        Page<Answer> answerPaging = this.answerService.getAnswers(questionEntity, answerPage);
+        Page<Answer> answerPaging = this.answerService.getAnswers(questionService.getQuestionEntity(id), answerPage);
 
         // 모델에 데이터 추가
         model.addAttribute("question", questionDto);

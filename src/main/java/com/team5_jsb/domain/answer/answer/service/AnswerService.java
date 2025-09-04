@@ -3,6 +3,7 @@ package com.team5_jsb.domain.answer.answer.service;
 import com.team5_jsb.domain.answer.answer.entity.Answer;
 import com.team5_jsb.domain.answer.answer.repository.AnswerRepository;
 import com.team5_jsb.domain.question.question.entity.Question;
+import com.team5_jsb.domain.user.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -20,11 +21,12 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private static final int PAGE_SIZE = 5;
 
-    public void create(Question question, String content) {
+    public void create(Question question, User author, String content) {
         Answer answer = new Answer();
         answer.setCreatedDate(LocalDateTime.now());
         answer.setContent(content);
         answer.setQuestion(question);
+        answer.setAuthor(author);
         answerRepository.save(answer);
     }
 
@@ -54,6 +56,13 @@ public class AnswerService {
         } else {
             throw new RuntimeException("answer not found");
         }
+    }
+
+    // 마이페이지: 내가 쓴 답변 페이징
+    @Transactional(readOnly = true)
+    public Page<Answer> getMyAnswers(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        return answerRepository.findByAuthor_IdOrderByCreatedDateDesc(userId, pageable);
     }
 
     public List<Answer> findAll() {
