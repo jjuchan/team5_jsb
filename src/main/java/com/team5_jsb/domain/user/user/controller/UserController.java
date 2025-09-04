@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,13 +22,17 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@RequiredArgsConstructor
 @Controller
 @RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    
+    public UserController(UserService userService, @Lazy AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+    }
 
     @GetMapping("/login")
     public String loginPage(Model model) {
@@ -39,12 +44,6 @@ public class UserController {
     public String signupPage(Model model) {
         model.addAttribute("signupRequest", new SignupRequest());
         return "user/signup";
-    }
-
-    @GetMapping("/profile")
-    @ResponseBody
-    public String profilePage(Model model) {
-        return "Profile Page 입니다.";
     }
 
     @PostMapping("/login-validate")

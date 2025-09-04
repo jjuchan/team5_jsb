@@ -26,9 +26,18 @@ public class User extends BaseEntity {
     @Column(unique = true, nullable = false, length = 100)
     private String email;
 
-    @OneToMany(mappedBy = "author", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "author", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch =
+            FetchType.LAZY)
     private List<Question> questions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "author", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch =
+            FetchType.LAZY)
     private List<Answer> answers = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private AuthProvider provider = AuthProvider.LOCAL;
+
+    @Column(length = 100)
+    private String providerId;
 }

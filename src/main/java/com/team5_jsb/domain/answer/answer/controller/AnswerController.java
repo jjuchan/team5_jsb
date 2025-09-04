@@ -7,10 +7,12 @@ import com.team5_jsb.domain.answer.answer.service.AnswerService;
 import com.team5_jsb.domain.question.question.entity.Question;
 import com.team5_jsb.domain.question.question.dto.QuestionResponseDTO;
 import com.team5_jsb.domain.question.question.service.QuestionService;
+import com.team5_jsb.domain.user.user.dto.CustomOidcUser;
 import com.team5_jsb.domain.user.user.dto.CustomUserDetails;
 import com.team5_jsb.domain.user.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +34,7 @@ public class AnswerController {
     public String createAnswer(Model model,
                                @PathVariable("id") long id,
                                @Valid AnswerCreateDto answerCreateDto, BindingResult bindingResult,
-                               @AuthenticationPrincipal CustomUserDetails userDetails,
+                               Authentication authentication,
                                RedirectAttributes redirectAttributes) {
         // 질문은 DTO로 재조립하지 말고 실제 엔티티 로딩
         Question question = questionService.getQuestionEntity(id);
@@ -46,7 +48,7 @@ public class AnswerController {
         }
 
         // 현재 로그인 사용자 (엔티티)
-        User author = userDetails.getUser();
+        User author = getCurrentUser(authentication);
 
         //  author 포함 버전 호출
         answerService.create(question, author, answerCreateDto.getContent());
@@ -77,6 +79,19 @@ public class AnswerController {
         Answer answer = answerService.getAnswer(id);
         answerService.update(answer, answerUpdateDto.getContent());
         return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+    }
+    
+    // 일반 로그인(CustomUserDetails), Google 소셜 로그인(CustomOidcUser) 모두 대응
+    private User getCurrentUser(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        
+        if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal).getUser();
+        } else if (principal instanceof CustomOidcUser) {
+            return ((CustomOidcUser) principal).getUser();
+        }
+        
+        throw new IllegalArgumentException("지원하지 않는 Principal 타입입니다: " + principal.getClass().getSimpleName());
     }
 
 }

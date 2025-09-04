@@ -1,5 +1,23 @@
 # 개발 환경 설정
 spring:
+  config:
+    import: "optional:sm://"
+
+  cloud:
+    gcp:
+      secretmanager:
+        project-id: complete-welder-330305
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: '${sm\://google-oauth-client-id}'
+            client-secret: '${sm\://google-oauth-client-secret}'
+            scope: openid, email, profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+
   h2:
     console:
       enabled: true
@@ -25,4 +43,5 @@ spring:
 logging:
   level:
     org.springframework.security: DEBUG
+    org.springframework.cloud.gcp.secretmanager: DEBUG
     com.team5_jsb: DEBUG
