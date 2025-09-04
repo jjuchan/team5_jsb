@@ -81,6 +81,216 @@
 
 ---
 
+# 📌 Q&A 게시판 - 회원 기능(담당 - 임창기)
+
+## 🔧 환경 설정
+
+### 1. Google OAuth2 설정 (필수)
+
+Application 실행 시 Google 소셜 로그인 기능을 사용하기 위해 다음 설정이 필수
+
+#### 1.1 Google Cloud SDK 설치
+
+- **winget**, **choco**, 또는 **설치 프로그램** 사용
+
+#### 1.2 설치 후 Git Bash에서 다음 명령어 실행
+
+```bash
+# Google Cloud SDK 버전 확인
+gcloud --version
+
+# Google 계정 로그인
+gcloud auth login
+
+# 애플리케이션 기본 자격증명 설정
+gcloud auth application-default login
+
+# 프로젝트 설정
+gcloud config set project complete-welder-330305
+```
+
+> **참고**: `application-default login`은 애플리케이션이 Secret Manager를 읽을 자격증명(ADC)을 저장
+>
+> **프로젝트 관리자 작업**: 팀원 구글 계정에 프로젝트 IAM 역할 부여 필요
+> - `roles/secretmanager.secretAccessor`
+
+#### 1.3 Secret Manager 값 확인
+
+```bash
+# OAuth Client ID 확인
+gcloud secrets versions access latest --secret=google-oauth-client-id --project=complete-welder-330305
+
+# OAuth Client Secret 확인
+gcloud secrets versions access latest --secret=google-oauth-client-secret --project=complete-welder-330305
+```
+> ✅ 값이 출력되면 접근 권한이 정상적으로 설정 완료
+
+### 2) application.yml 설정
+
+`src/main/resources/application.yml`에 다음 설정이 필요
+```yaml
+spring:
+  config:
+    import: "optional:sm://"
+
+  cloud:
+    gcp:
+      secretmanager:
+        project-id: complete-welder-330305
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: '${sm://google-oauth-client-id}'
+            client-secret: '${sm://google-oauth-client-secret}'
+            scope: openid, email, profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+```
+
+---
+
+## ✅ 기능
+
+- [x] 회원가입 ✍️
+- [x] 로그인/로그아웃 🔐
+- [x] Google 소셜 로그인 🌐
+- [x] 보안 설정 🛡️
+
+---
+
+## ✅ 화면
+
+> 회원가입 페이지
+![signup.png](signup.png)
+> 로그인 페이지
+![login.png](login.png)
+> Google 소셜 로그인
+![socialLogin.png](socialLogin.png)
+---
+
+## ✅ Entity 설계
+
+## User
+
+| 필드명 | 타입 | 설명 | 비고 |
+| --- | --- | --- | --- |
+| id | Long | 기본 키 | BaseEntity 상속 |
+| username | String | 사용자명 | `@Column(unique = true, length = 50)` |
+| password | String | 비밀번호 | BCrypt 암호화 |
+| email | String | 이메일 | `@Column(unique = true, length = 100)` |
+| provider | AuthProvider | 로그인 방식 | `@Enumerated(EnumType.STRING)` |
+| providerId | String | 소셜 로그인 ID | `@Column(length = 100)` |
+| createdDate | LocalDateTime | 생성일 | BaseEntity |
+| modifiedDate | LocalDateTime | 수정일 | BaseEntity |
+
+## AuthProvider (Enum)
+
+| 값 | 설명 |
+| --- | --- |
+| LOCAL | 일반 회원가입 |
+| GOOGLE | Google OAuth |
+| KAKAO | Kakao OAuth (추후 구현) |
+| NAVER | Naver OAuth (추후 구현) |
+
+---
+
+### 연관 관계
+
+- `questions : List<Question>` → **OneToMany** (작성한 질문 목록, CascadeType.PERSIST/REMOVE)
+- `answers : List<Answer>` → **OneToMany** (작성한 답변 목록, CascadeType.PERSIST/REMOVE)
+
+---
+
+## 📌 Thymeleaf Template
+
+- 회원가입: `user/signup`
+- 로그인: `user/login`
+- 마이페이지: `mypage`
+- 에러 처리: `common/fragment/errors`
+- 헤더: `common/fragment/header`
+- 레이아웃: `templates/layout`
+
+## API 명세서
+
+| 메서드 | 경로 | 설명 | 요청값 | 모델 속성 | 반환 |
+| --- | --- | --- | --- | --- | --- |
+| GET | `/user/signup` | 회원가입 폼 | - | `signupRequest` | `user/signup` |
+| POST | `/user/signup` | 회원가입 처리 | `SignupRequest` (검증 포함) | - | 성공: `redirect:/user/login`<br>실패: `user/signup` |
+| GET | `/user/login` | 로그인 폼 | - | `loginRequest` | `user/login` |
+| POST | `/user/login-validate` | 로그인 처리 | `LoginRequest` (검증 포함) | - | 성공: `redirect:/`<br>실패: `redirect:/user/login?error` |
+| GET | `/user/logout` | 로그아웃 | - | - | `redirect:/user/login` |
+| GET | `/oauth2/authorization/google` | Google 로그인 | - | - | Google 인증 페이지로 리다이렉트 |
+| GET | `/login/oauth2/code/google` | Google 콜백 | 인증 코드 | - | 성공: `redirect:/`<br>실패: 에러 페이지 |
+| GET | `/mypage` | 마이페이지 | `page`(int, 기본 0), `answerPage`(int, 기본 0) | `user`(UserProfileDto), `questions`(Page<Question>), `answers`(Page<Answer>) | `mypage` |
+
+---
+
+# 🛠️ Trouble Shooting
+
+## 1. 문제 상황 - OAuth2 vs OIDC 구분
+
+- 처음에는 Google 로그인을 **OAuth2 방식**으로 구현하려 했음.
+- `CustomOAuth2UserService`를 만들어서 `userInfoEndpoint`에 설정했으나 전혀 호출되지 않음.
+- 디버그 로그가 하나도 출력되지 않아서 설정 문제인지 의심했음.
+
+## 2. 시도한 해결 과정
+
+1. SecurityConfig 설정을 여러 번 확인하고 Bean 등록 상태도 점검.
+2. 로그를 자세히 분석한 결과 `OIDC_USER` 권한과 Google scope들이 출력되는 것을 발견.
+3. Google이 **OpenID Connect(OIDC)** 를 지원한다는 것을 알게 됨.
+4. `CustomOidcUserService`로 전환하고 `.oidcUserService()` 설정으로 변경.
+
+## 3. 배운 점
+
+- **Google은 OIDC를 사용**하므로 `OidcUserService` 확장 필요.
+- **Kakao, Naver는 일반 OAuth2**이므로 `OAuth2UserService` 사용.
+- Spring Security가 자동으로 OIDC와 OAuth2를 구분해서 처리한다는 것을 배웠음.
+
+---
+
+## 4. 문제 상황 - Principal 타입 불일치
+
+- `@AuthenticationPrincipal CustomUserDetails`를 사용했는데 Google 로그인 사용자는 `null`로 처리됨.
+- 마이페이지, 질문 등록, 답변 등록에서 모두 NullPointerException 발생.
+- 일반 로그인과 소셜 로그인의 Principal 타입이 달라서 생긴 문제.
+
+## 5. 시도한 해결 과정
+
+1. 처음에는 Google 로그인만 CustomOidcUser로 변경하려 했으나 기존 코드 영향도가 큼.
+2. `Authentication` 객체를 직접 사용하는 방식으로 변경.
+3. `getCurrentUser()` 헬퍼 메서드를 만들어서 타입별로 안전하게 User 정보 추출.
+4. 모든 컨트롤러에서 동일한 방식으로 적용.
+
+## 6. 배운 점
+
+- Spring Security에서 **인증 방식별로 Principal 타입이 다르다**는 것을 배움.
+- `instanceof`를 활용한 **타입 안전한 처리 방법** 습득.
+- 하나의 애플리케이션에서 **여러 인증 방식을 동시 지원**하는 방법을 익힘.
+
+---
+
+## 7. 문제 상황 - 순환 의존성
+
+- Bean 생성 과정에서 `BeanCurrentlyInCreationException` 발생.
+- SecurityConfig ↔ UserService ↔ PasswordEncoder 간 순환 참조 문제.
+- 애플리케이션이 시작되지 않음.
+
+## 8. 시도한 해결 과정
+
+1. 의존성 관계를 분석해서 순환 고리 파악.
+2. `@Lazy` 어노테이션을 적절한 위치에 적용.
+3. UserService와 SecurityConfig 모두에 `@Lazy` 설정.
+
+## 9. 배운 점
+
+- Spring에서 **순환 의존성 문제의 원인과 해결 방법** 이해.
+- `@Lazy`를 통한 **지연 로딩으로 순환 고리를 끊는 방법** 학습.
+- **복잡한 보안 설정에서 자주 발생하는 문제**라는 것을 인식.
+
+---
+
 # 📑 마이페이지 기능 (담당 - 노현정)
 
 ## 🔎 구현 개요
@@ -213,6 +423,71 @@
 - HTML form은 오직 `GET`, `POST`만 지원한다….
 - `PUT`, `PATCH`, `DELETE`는 **비동기 요청(AJAX/fetch)** 또는 **Spring HiddenHttpMethodFilter** 등을 활용해야 한다.
 - MVC 기반 Thymeleaf 프로젝트에서는 우선 `GET/POST`로 구현하고, 이후 RESTful 구조로 확장할 때는 자바스크립트 비동기 요청을 사용해야 한다라는 걸 알게되었다.
+
+---
+
+# 📌 Q&A 게시판 - 답변 기능(담당 - 주권영)
+
+##  ✅ 기능
+
+---
+
+- 답변 목록 보기 (작성자, 생성일, 수정일 포함)
+- 답변 등록
+- 답변 수정
+- 답변 삭제
+
+## 🏞️ 구현 화면
+
+> 답변 등록 화면
+![answer.png](answer.png)
+
+> 답변 수정 화면
+![answerModify.png](answerModify.png)
+
+## ✅ Entity 설계
+
+Answer
+---
+| 필드명 | 타입 | 설명 | 비고 |
+| --- | --- | --- | --- |
+| id | Long | 기본 키 | BaseEntity |
+| content | String | 답변 내용 | `@Column(columnDefinition = "TEXT")` |
+| createdDate | LocalDateTime | 생성일 | BaseEntity |
+| modifiedDate | LocalDateTime | 수정일 | BaseEntity |
+
+연관 관계
+
+- `Question : Answer`  → `1:N`
+- `user : Answer` → `1:N`
+
+## 📌 Thymeleaf Template
+
+---
+
+- 질문 상세 내의 답변목록 : `question_detail`
+- 답변 수정 폼 : `answer_form`
+
+API 명세서
+
+---
+
+| **메서드** | **경로** | **설명** | **요청값** | **모델 속성** | **반환** |
+| --- | --- | --- | --- | --- | --- |
+| POST | `/answer/create/{id}` | 답변 등록 | `questionId`
+`AnswerCreateDto` | `AnswerCreateDto` | `question_list` |
+| GET | `/answer/delete/{id}` | 답변 삭제 | `id` | - | `redirect:/question/detail/{id}` |
+| GET | `/answer/modify/{id}` | 답변 수정 폼 | `id` | `AnswerUpdateDto` 
+`id` | `answer_form` |
+| POST | `/answer/modify/{id}` | 답변 수정 | `id` | - | `redirect:/question/detail/{id}` |
+
+## 🛠 Trouble Shooting
+
+---
+
+1. 답변 등록 필터링
+- 문제 :  `form_errors`  를 활용하여 답변 입력 폼을 필터링 하였지만, 병합하는 과정에서 해당 파일이 올바르게 호출되지 않음
+- 해결 : 질문 등록
 
 ---
 
